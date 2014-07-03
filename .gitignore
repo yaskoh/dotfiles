@@ -1,0 +1,17 @@
+/*
+
+!/README.md
+!/.gitignore
+
+!/.emacs.d
+/.emacs.d/*
+!/.emacs.d/init.el
+!/.emacs.d/elisp
+/.emacs.d/elisp/bk/*
+
+!/.zshrc
+
+!/site-lisp
+/site-lisp/*
+!/site-lisp/siteinit.l
+
