@@ -18,6 +18,13 @@
 ;; 下記ディレクトリおよびサブディレクトリをサブディレクトリに追加
 (add-to-load-path "elisp")
 
+;;; ================================================
+;;; Serverをスタートしておく
+;;; ※windowsではserverの所有者権限が必要な模様。
+;;; ================================================
+(require 'server)
+(unless (server-running-p)
+  (server-start))
 
 ;;; ================================================
 ;;; Macでのキーボード配置を変更
@@ -431,3 +438,11 @@
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cb" 'org-iswitchb)
 
+
+;;; ================================================
+;;; flycheck
+;;; 2014/6/4
+;;; ================================================
+(require 'flycheck)
+(add-hook 'flycheck-before-syntax-check-hook  #'csharp-set-flycheck-command)
+(add-hook 'find-file-hook #'global-flycheck-mode)

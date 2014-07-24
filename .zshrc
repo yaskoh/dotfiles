@@ -32,6 +32,11 @@ CYGWIN*)
     PROMPT='%n[%~]%# '
     RPROMPT='%D %T'
     bindkey -e
+
+    export PATH="$HOME/.rbenv/bin:$PATH"
+    eval "$(rbenv init -)"
+
+    export PATH="/usr/local/bin:$PATH"
     ;;
 
 esac

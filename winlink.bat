@@ -7,15 +7,15 @@ if not exist winlink mkdir winlink
 rem ********************
 rem emacs
 rem ********************
-mklink /d winlink\.emacs.d %~dp0\.emacs.d
+mklink /d %HOME%\.emacs.d %~dp0\.emacs.d
 
 rem ********************
 rem zsh
 rem ********************
-mklink winlink\.zshrc %~dp0\.zshrc
+mklink %HOME%\.zshrc %~dp0\.zshrc
 
 rem ********************
 rem xyzzy
 rem ********************
-mklink winlink\siteinit.el %~dp0\sitelisp\.siteinit.el
+mklink winlink\siteinit.l %~dp0\site-lisp\siteinit.l
 
