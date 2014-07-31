@@ -3,6 +3,7 @@
 !/README.md
 !/.gitignore
 !/winlink.bat
+!/setup.sh
 
 !/.emacs.d
 /.emacs.d/*
