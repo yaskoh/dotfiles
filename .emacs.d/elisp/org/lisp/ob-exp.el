@@ -24,6 +24,7 @@
 
 ;;; Code:
 (require 'ob-core)
+(require 'org-src)
 (eval-when-compile
   (require 'cl))
 
@@ -269,7 +270,9 @@ this template."
 					 (save-excursion (goto-char end)
 							 (line-end-position)))
 			  (insert replacement)
-			  (if (org-element-property :preserve-indent element)
+			  (if (or org-src-preserve-indentation
+				  (org-element-property :preserve-indent
+							element))
 			      ;; Indent only the code block markers.
 			      (save-excursion (skip-chars-backward " \r\t\n")
 					      (indent-line-to ind)

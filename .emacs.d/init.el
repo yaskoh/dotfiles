@@ -1,10 +1,6 @@
 ;;; ================================================
 ;;; Load-Path
 ;;; ================================================
-;; Emacs 23より前のバージョンのためにuser-emacs-directoryを定義
-(when (> emacs-major-version 23)
-  (defvar user-emacs-directory "~/.emacs.d"))
- 
 ;; load pathを追加する関数を定義
 (defun add-to-load-path (&rest paths)
   (let (path)
@@ -432,7 +428,7 @@
 ;;; http://orgmode.org/ja/
 ;;; ================================================
 ;(require 'org)
-(require 'org-install)
+;(require 'org-install)
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-cc" 'org-capture)
 (global-set-key "\C-ca" 'org-agenda)
@@ -446,3 +442,4 @@
 (require 'flycheck)
 (add-hook 'flycheck-before-syntax-check-hook  #'csharp-set-flycheck-command)
 (add-hook 'find-file-hook #'global-flycheck-mode)
+

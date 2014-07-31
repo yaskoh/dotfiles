@@ -312,8 +312,7 @@ Works on both Emacs and XEmacs."
 (defun org-in-invisibility-spec-p (arg)
   "Is ARG a member of `buffer-invisibility-spec'?"
   (if (consp buffer-invisibility-spec)
-      (member arg buffer-invisibility-spec)
-    nil))
+      (member arg buffer-invisibility-spec)))
 
 (defmacro org-xemacs-without-invisibility (&rest body)
   "Turn off extents with invisibility while executing BODY."
@@ -343,10 +342,15 @@ Works on both Emacs and XEmacs."
       (org-xemacs-without-invisibility (indent-line-to column))
     (indent-line-to column)))
 
-(defun org-move-to-column (column &optional force buffer ignore-invisible)
-  (let ((buffer-invisibility-spec ignore-invisible))
+(defun org-move-to-column (column &optional force buffer)
+  "Move to column COLUMN.
+Pass COLUMN and FORCE to `move-to-column'.
+Pass BUFFER to the XEmacs version of `move-to-column'."
+  (let ((buffer-invisibility-spec
+	 (remove '(org-filtered) buffer-invisibility-spec)))
     (if (featurep 'xemacs)
-	(org-xemacs-without-invisibility (move-to-column column force buffer))
+	(org-xemacs-without-invisibility
+	 (move-to-column column force buffer))
       (move-to-column column force))))
 
 (defun org-get-x-clipboard-compat (value)
