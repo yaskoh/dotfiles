@@ -19,7 +19,12 @@ Darwin*)
 Linux*)
     alias ls='ls -F --color=tty'
     alias ll='ls -l'
+    PROMPT='%n[%~]%# '
+    RPROMPT='%D %T'
     bindkey -e
+    export PATH="$HOME/.rbenv/bin:$PATH"
+    eval "$(rbenv init -)"
+    export PATH=$PATH:/sbin # for Debian
     ;;
 
 # Cygwin
