@@ -408,8 +408,8 @@
 ;タブハイライト
 (setq jaspace-highlight-tabs t)
 ;起動時設定
-(add-hook 'text-mode 'jaspace-mode-on)
-(add-hook 'org-mode 'jaspace-mode-on)
+(add-hook 'text-mode-hook 'jaspace-mode-on)
+(add-hook 'org-mode-hook 'jaspace-mode-on)
 (jaspace-mode-on)
 
 
