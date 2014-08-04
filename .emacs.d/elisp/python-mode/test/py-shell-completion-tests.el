@@ -48,13 +48,15 @@
   (interactive)
   (let (py-shell-switch-buffers-on-execute-p
         py-split-windows-on-execute-p)
-    (set-buffer (py-shell nil t "python" nil "/"))
+    ;; (set-buffer (py-shell nil t "python" nil "/"))
+    (set-buffer (py-shell nil t "python"))
     (when (interactive-p) (switch-to-buffer (current-buffer)))
     (sit-for 0.2 t)
     (goto-char (point-max))
     (save-excursion
       (insert "pri")
       (py-shell-complete))
+    (sit-for 0.5)
     (assert (looking-at "print") nil "python-shell-complete-test failed")
     (message "%s" "python-shell-complete-test passed")))
 
@@ -70,6 +72,7 @@
     (insert "pri")
     (py-shell-complete)
     (forward-word -1)
+    (sit-for 0.1)
     (assert (looking-at "print") nil "usr-bin-python-shell-complete-test failed")
     (when py-verbose-p (message "%s" "usr-bin-python-shell-complete-test passed"))))
 
@@ -121,14 +124,16 @@
   (interactive)
   (let (py-shell-switch-buffers-on-execute-p
         py-split-windows-on-execute-p)
-    (set-buffer (py-shell nil t "ipython" nil "/"))
-    (sit-for 0.1)
+    (set-buffer (py-shell nil t "ipython"))
+    (switch-to-buffer (current-buffer))
+    (sit-for 2)
     (goto-char (point-max))
+    ;; (comint-send-input)
     (insert "pri")
+
     (py-shell-complete)
     (sit-for 0.1)
-    (forward-word -1)
-    (assert (looking-at "print") nil "ipython-shell-complete-test failed")
+    (assert (looking-back "print") nil "ipython-shell-complete-test failed")
     (message "%s" "ipython-shell-complete-test passed")))
 
 
@@ -166,4 +171,3 @@
 
 (provide 'py-shell-completion-tests)
 ;;; py-shell-completion-tests ends here
-

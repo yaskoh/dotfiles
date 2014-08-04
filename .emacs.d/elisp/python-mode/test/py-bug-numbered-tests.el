@@ -38,6 +38,36 @@
 
 (setq bug-numbered-tests
       (list
+       'py-execute-buffer-ipython-lp-1252643-test
+       'py-empty-line-closes-p-lp-1235324-test
+       'C-c-C-c-lp:1221310-and-store-result-test
+       'Bogus-whitespace-left-in-docstring-after-wrapping-lp-1178455-test
+       'Bogus-dedent-when-typing-colon-in-dictionary-literal-lp-1197171-test
+       'python-mode-very-slow-lp-1107037-test
+       'cascading-indent-lp-1101962-test
+       'line-after-colon-with-inline-comment-lp-1109946-test
+       'more-docstring-filling-woes-lp-1102296-pep-257-nn-test
+       'more-docstring-filling-woes-lp-1102296-pep-257-test
+       'more-docstring-filling-woes-lp-1102296-nil-test
+       'more-docstring-filling-woes-lp-1102296-onetwo-test
+       'more-docstring-filling-woes-lp-1102296-django-test
+       'more-docstring-filling-woes-lp-1102296-symmetric-test
+       'module-docstring-when-following-comment-lp-1102011-test
+       'py-newline-and-indent-leaves-eol-whitespace-lp-1100892-test
+       'py-underscore-word-syntax-p-customization-has-no-effect-lp-1100947-test
+       'py-up-test-python-el-111-test
+       'py-down-python-el-112-test
+       'enter-key-does-not-indent-properly-after-return-statement-lp-1098793-test
+       'filename-completion-fails-in-ipython-lp-1027265-n1-test
+       'filename-completion-fails-in-ipython-lp-1027265-n2-test
+       'comments-start-a-new-line-lp-1092847-n1-test
+       'comments-start-a-new-line-lp-1092847-n2-test
+       'temporary-files-remain-when-python-raises-exception-lp-1083973-n1-test
+       'temporary-files-remain-when-python-raises-exception-lp-1083973-n2-test
+       'temporary-files-remain-when-python-raises-exception-lp-1083973-n3-test
+       'temporary-files-remain-when-python-raises-exception-lp-1083973-n4-test
+       'wrong-indentation-after-return-or-pass-keyword-lp-1087499-test
+       'wrong-indent-after-asignment-lp-1087404-test
        'py-execute-buffer-python3-looks-broken-lp-1085386-test
        'fill-paragraph-in-comments-results-in-mess-lp-1084769-test
        'imenu-add-menubar-index-fails-lp-1084503-test
@@ -53,8 +83,8 @@
        'stalls-emacs-probably-due-to-syntax-highlighting-lp-1058261-test
        'py-find-imports-lp-1023236-test
        'pycomplete-imports-not-found-error-when-no-symbol-lp:1019791-test
-       'return-statement-indented-incorrectly-lp-1019601.py-test
-       'converts-tabs-to-spaces-in-indent-tabs-mode-t-lp-1019128.py-test
+       'return-statement-indented-incorrectly-lp-1019601-test
+       'converts-tabs-to-spaces-in-indent-tabs-mode-t-lp-1019128-test
        'empty-triple-quote-lp:1009318-test
        'spurious-trailing-whitespace-lp-1008679-test
        'completion-fails-in-python-script-r989-lp:1004613-test
@@ -116,7 +146,7 @@
        'py-variable-name-face-lp:798538-test
        'colon-causes-error-lp:818665-test
        'if-indentation-lp:818720-test
-       'closing-parentesis-indent-lp:821820-test
+       'closing-parenthesis-indent-lp:821820-test
        'py-indent-line-lp:822532-test
        'indent-honor-arglist-whitespaces-lp:822540-test
        'comments-indent-honor-setting-lp:824427-test
@@ -215,6 +245,47 @@ on."
             (kill-process (get-buffer-process (current-buffer))))
        (kill-buffer (current-buffer)))))
 
+;; py-if-name-main-permission-p
+(defun py-if-name-main-permission-lp-326620-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+def py_if_name_main_permission_test():
+    if __name__ == \"__main__\" :
+        print(\"__name__ == '__main__' run\")
+        return True
+
+    else:
+        print(\"__name__ == '__main__' supressed\")
+        return False
+
+py_if_name_main_permission_test()
+"))
+  (py-bug-tests-intern 'py-if-name-main-permission-lp-326620-base arg teststring)))
+
+(defun py-if-name-main-permission-lp-326620-base ()
+  (save-excursion
+    (let ((py-if-name-main-permission-p t)
+          (py-shell-name (py-choose-shell)))
+      (py-execute-buffer)
+      (set-buffer "*Python*")
+      ;; (switch-to-buffer (current-buffer))
+      (goto-char (point-max))
+      (forward-line -1)
+      (end-of-line)
+      (sit-for 0.2)
+      (assert (looking-back "run") nil "py-if-name-main-permission-lp-326620-test #1 failed")))
+  (switch-to-buffer (current-buffer))
+  (let (py-if-name-main-permission-p)
+    (py-execute-buffer)
+    (set-buffer "*Python*")
+    ;; (switch-to-buffer (current-buffer))
+    (goto-char (point-max))
+    (forward-line -1)
+    (end-of-line)
+    (sit-for 0.2)
+    (assert (looking-back "supressed") nil "py-if-name-main-permission-lp-326620-test #2 failed")))
+
 (defun sexp-commands-lp:328778-test (&optional arg)
   "With ARG greater 1 keep test buffer open.
 If no `load-branch-function' is specified, make sure the appropriate branch is loaded. Otherwise default python-mode will be checked.
@@ -266,16 +337,69 @@ def main(argv):
 If no `load-branch-function' is specified, make sure the appropriate branch is loaded. Otherwise default python-mode will be checked. "
   (interactive "p")
   (let ((teststring "
-    d = {'a':{'b':3,
-              'c':4}}
+
+# hanging
+asdf = {
+    'a':{
+         'b':3,
+         'c':4
+        }
+    }
+
+# closing
+asdf = {
+    'a':{
+        'b':3,
+        'c':4
+    }
+}
+
+data = {
+    'key':
+    {
+        'objlist': [
+            {
+                'pk': 1,
+                'name': 'first',
+            },
+            {
+                'pk': 2,
+                'name': 'second',
+            }
+        ]
+    }
+}
+
 "))
     (py-bug-tests-intern 'nested-dictionaries-indent-lp:328791 arg teststring)))
 
 (defun nested-dictionaries-indent-lp:328791 ()
-  (let ((py-indent-honors-multiline-listing t))
+  (let ((py-indent-honors-multiline-listing t)
+        py-closing-list-dedents-bos)
     (goto-char (point-min))
-    (forward-line 2)
-    (assert (eq 14 (py-compute-indentation)) nil "nested-dictionaries-indent-lp:328791-test failed")))
+    (search-forward "'a':{")
+    (assert (eq 4 (py-compute-indentation)) nil "nested-dictionaries-indent-lp:328791-test #1 failed")
+    (search-forward "}")
+    (assert (eq 8 (py-compute-indentation)) nil "nested-dictionaries-indent-lp:328791-test #2 failed")
+    (search-forward "}")
+    (assert (eq 4 (py-compute-indentation)) nil "nested-dictionaries-indent-lp:328791-test #3 failed")
+
+    ;; py-closing-list-dedents-bos
+    (setq py-closing-list-dedents-bos t)
+    (search-forward "'a':{")
+    (assert (eq 4 (py-compute-indentation)) nil "nested-dictionaries-indent-lp:328791-test #1 failed")
+    (search-forward "}")
+    (assert (eq 4 (py-compute-indentation)) nil "nested-dictionaries-indent-lp:328791-test #1 failed")
+    (search-forward "}")
+    (assert (eq 0 (py-compute-indentation)) nil "nested-dictionaries-indent-lp:328791-test #2 failed")
+    (search-forward "}" nil nil 2)
+    (assert (eq 12 (py-compute-indentation)) nil "nested-dictionaries-indent-lp:328791-test #2 failed")
+    (search-forward "]")
+    (assert (eq 8 (py-compute-indentation)) nil "nested-dictionaries-indent-lp:328791-test #2 failed")
+    (search-forward "}")
+    (assert (eq 4 (py-compute-indentation)) nil "nested-dictionaries-indent-lp:328791-test #2 failed")
+    (search-forward "}")
+    (assert (eq 0 (py-compute-indentation)) nil "nested-dictionaries-indent-lp:328791-test #2 failed")))
 
 (defun mark-block-region-lp:328806-test (&optional arg)
   "With ARG greater 1 keep test buffer open.
@@ -404,10 +528,10 @@ If no `load-branch-function' is specified, make sure the appropriate branch is l
   (interactive "p")
   (let ((teststring "
 # Bug #328813 (sf1775975)
-print \"\"\" \"Hi!\" I'm a doc string\"\"\"
-print ''' 'Hi!' I'm a doc string'''
-print \"\"\" ''' \"Hi!\" I'm a doc string ''' \"\"\"
-print ''' \"\"\" \"Hi!\" I'm a doc string \"\"\" '''
+print(\"\"\" \"Hi!\" I'm a doc string\"\"\")
+print(''' 'Hi!' I'm a doc string''')
+print(\"\"\" ''' \"Hi!\" I'm a doc string ''' \"\"\")
+print(''' \"\"\" \"Hi!\" I'm a doc string \"\"\" ''')
 "))
     (py-bug-tests-intern 'dq-in-tqs-string-lp:328813 arg teststring)))
 
@@ -557,7 +681,8 @@ If no `load-branch-function' is specified, make sure the appropriate branch is l
 (defun previous-statement-lp:637955 ()
   (beginning-of-line)
   (py-previous-statement)
-  (assert (eq 1 (point)) nil "previous-statement-lp:637955-test failed."))
+  (sit-for 0.1)
+  (assert (eq 31 (point)) nil "previous-statement-lp:637955-test failed."))
 
 (defun nested-indents-lp:328775-test (&optional arg)
   "With ARG greater 1 keep test buffer open.
@@ -566,11 +691,11 @@ If no `load-branch-function' is specified, make sure the appropriate branch is l
   (let ((teststring "
 if x > 0:
     for i in range(100):
-        print i
+        print(i)
     else:
-    print \"All done\"
+    print(\"All done\")
 elif x < 0:
-    print \"x is negative\"
+    print(\"x is negative\")
 "))
     (py-bug-tests-intern 'nested-indents-lp:328775 arg teststring)))
 
@@ -578,7 +703,7 @@ elif x < 0:
   (assert (eq 4 (py-compute-indentation)) nil "nested-indents-lp:328775-test #1 failed!")
   (goto-char 41)
   (assert (eq 8 (py-compute-indentation)) nil "nested-indents-lp:328775-test #2 failed!")
-  (goto-char 53)
+  (goto-char 54)
   (assert (eq 4 (py-compute-indentation)) nil "nested-indents-lp:328775-test #3 failed!"))
 
 (defun bullet-lists-in-comments-lp:328782-test (&optional arg)
@@ -699,7 +824,7 @@ This docstring isn't indented, test should pass anyway.
 
 (defun goto-beginning-of-tqs-lp:735328 ()
   (goto-char 84)
-  (assert (eq 0 (py-compute-indentation)) nil "goto-beginning-of-tqs-lp:735328-test failed")
+  (assert (eq 4 (py-compute-indentation)) nil "goto-beginning-of-tqs-lp:735328-test failed")
   )
 
 (defun class-treated-as-keyword-lp:709478-test (&optional arg)
@@ -723,7 +848,7 @@ If no `load-branch-function' is specified, make sure the appropriate branch is l
     (assert (eq (get-char-property (point) 'face) 'font-lock-string-face) nil "class-treated-as-keyword-lp:709478d 1th test failed")
     (goto-char 57)
     ;; (assert (if (get-char-property (point) 'face)(eq (get-char-property (point) 'face) 'py-variable-name-face)t) nil "class-treated-as-keyword-lp:709478-test 2th failed")))
-    (assert (eq (get-char-property (point) 'face) nil) nil "class-treated-as-keyword-lp:709478-test 2th failed")))
+    (assert (eq (get-char-property (point) 'face) 'py-variable-name-face) nil "class-treated-as-keyword-lp:709478-test 2th failed")))
 
 (defun fore-00007F-breaks-indentation-lp:328788-test (&optional arg)
   "With ARG greater 1 keep test buffer open.
@@ -762,7 +887,7 @@ If no `load-branch-function' is specified, make sure the appropriate branch is l
 (defun syntaxerror-on-py-execute-region-lp:691542-test (&optional arg)
   (interactive "p")
   (let ((teststring "# -*- coding: utf-8 -*-
-print \"Poet Friedrich Hölderlin\""))
+print(\"Poet Friedrich Hölderlin\""))
     (py-bug-tests-intern 'syntaxerror-on-py-execute-region-lp:691542-base arg teststring)))
 
 (defun syntaxerror-on-py-execute-region-lp:691542-base ()
@@ -785,21 +910,19 @@ print \"Poet Friedrich Hölderlin\""))
 If no `load-branch-function' is specified, make sure the appropriate branch is loaded. Otherwise default python-mode will be checked."
   (interactive "p")
   (let ((teststring "
-self.last_abc_attr = \
-self.last_xyz_attr = \
-self.last_abc_other = \
-self.last_xyz_other = None
-
+# py-continuation-offset: 2
 self.last_abc_attr = \\
 self.last_xyz_attr = \\
 self.last_abc_other = \\
 self.last_xyz_other = None
 
+# py-continuation-offset: 4
 self.last_abc_attr = \\
 self.last_xyz_attr = \\
 self.last_abc_other = \\
 self.last_xyz_other = None
 
+# py-continuation-offset: 6
 self.last_abc_attr = \\
 self.last_xyz_attr = \\
 self.last_abc_other = \\
@@ -809,23 +932,20 @@ self.last_xyz_other = None
 
 (defun backslashed-continuation-line-indent-lp:742993 ()
   (let ((py-continuation-offset 2))
-    (goto-char 93)
-    (insert (concat "\n# py-continuation-offset: " (number-to-string py-continuation-offset)))
-    (goto-char 145)
-    (indent-to (py-compute-indentation))
-    (assert (eq 2 (current-indentation)) nil "backslashed-continuation-line-indent-lp:742993-test #1 failed")
-    (goto-char 170)
-    (assert (eq (py-compute-indentation) py-continuation-offset) nil "backslashed-continuation-line-indent-lp:742993-test #2 failed")
+    (goto-char 54)
+    (assert (eq 2 (py-compute-indentation)) nil "backslashed-continuation-line-indent-lp:742993-test #1a failed")
+    (assert (eq (py-compute-indentation) py-continuation-offset) nil "backslashed-continuation-line-indent-lp:742993-test #1b failed")
 
     (setq py-continuation-offset 4)
-    (forward-line 2)
-    (insert (concat "\n# py-continuation-offset: " (number-to-string py-continuation-offset)))
-    (goto-char 277)
-    (assert (eq (py-compute-indentation) py-continuation-offset) nil "backslashed-continuation-line-indent-lp:742993-test #4 failed")
+    (goto-char 180)
+    (assert (eq 4 (py-compute-indentation)) nil "backslashed-continuation-line-indent-lp:742993-test #2a failed")
+    (assert (eq (py-compute-indentation) py-continuation-offset) nil "backslashed-continuation-line-indent-lp:742993-test #2b failed")
 
     (setq py-continuation-offset 6)
-    (forward-line 3)
-    (insert (concat "\n# py-continuation-offset: " (number-to-string py-continuation-offset)))))
+    (goto-char 306)
+    (assert (eq 6 (py-compute-indentation)) nil "backslashed-continuation-line-indent-lp:742993-test #3a failed")
+    (assert (eq (py-compute-indentation) py-continuation-offset) nil "backslashed-continuation-line-indent-lp:742993-test #3b failed")
+    ))
 
 (defun py-decorators-face-lp:744335-test (&optional arg)
   "With ARG greater 1 keep test buffer open.
@@ -1030,12 +1150,13 @@ except:
   (interactive "p")
   (let ((teststring "def foo():
     something()
+
     another(
 "))
     (py-bug-tests-intern 'unbalanced-parentheses-lp:784645-base arg teststring)))
 
 (defun unbalanced-parentheses-lp:784645-base ()
-  (goto-char 40)
+  (goto-char 28)
   (assert (eq 4 (py-compute-indentation)) nil "unbalanced-parentheses-lp:784645-test failed"))
 
 (defun explicitly-indent-in-list-lp:785018-test (&optional arg)
@@ -1345,7 +1466,7 @@ def add(ui, repo, \*pats, \*\*opts):
 # py-master-file: \"/usr/tmp/my-master.py\"
 # End:
 
-print \"master-file is executed\"
+print(\"master-file is executed\")
 ")))
     (py-bug-tests-intern 'master-file-not-honored-lp:794850-base arg teststring)))
 
@@ -1357,7 +1478,7 @@ print \"master-file is executed\"
       (insert "#! /usr/bin/env python
  # -*- coding: utf-8 -*-
 
-print \"Hello, I'm your master!\"
+print(\"Hello, I'm your master!\")
 ")
       (write-file "/var/tmp/my-master.py"))
     (set-buffer oldbuf)
@@ -1387,7 +1508,7 @@ print \"Hello, I'm your master!\"
   (let ((teststring (concat py-test-shebang "
  # -*- coding: utf-8 -*-
 
-print \"Hello!\"
+print(\"Hello!\")
 ")))
     (py-bug-tests-intern 'colon-causes-error-lp:818665-base arg teststring)))
 
@@ -1418,7 +1539,7 @@ class X():
   (goto-char 196)
   (assert (eq 12 (py-compute-indentation)) nil "if-indentation-lp:818720-test failed"))
 
-(defun closing-parentesis-indent-lp:821820-test (&optional arg)
+(defun closing-parenthesis-indent-lp:821820-test (&optional arg)
   (interactive "p")
   (let ((teststring (concat py-test-shebang "
 # -*- coding: utf-8 -*-
@@ -1433,28 +1554,28 @@ if foo:
         )
     )
 ")))
-    (py-bug-tests-intern 'closing-parentesis-indent-lp:821820-base arg teststring)))
+    (py-bug-tests-intern 'closing-parenthesis-indent-lp:821820-base arg teststring)))
 
-(defun closing-parentesis-indent-lp:821820-base ()
+(defun closing-parenthesis-indent-lp:821820-base ()
   (let ((py-closing-list-dedents-bos t))
     (forward-line -1)
-    (assert (eq 4 (py-compute-indentation)) nil "closing-parentesis-indent-lp:821820-test failed")))
+    (assert (eq 4 (py-compute-indentation)) nil "closing-parenthesis-indent-lp:821820-test failed")))
 
 (defun py-indent-line-lp:822532-test (&optional arg)
   (interactive "p")
   (let ((teststring "
 if x > 0:
     for i in range(100):
-        print i
+        print(i)
     else:
-    print \"All done\"
+    print(\"All done\")
 elif x < 0:
-    print \"x is negative\"
+    print(\"x is negative\")
 "))
     (py-bug-tests-intern 'py-indent-line-lp:822532-base arg teststring)))
 
 (defun py-indent-line-lp:822532-base ()
-  (goto-char 53)
+  (goto-char 54)
   (assert (eq 4 (py-compute-indentation)) nil "py-indent-line-lp:822532-test failed"))
 
 (defun indent-honor-arglist-whitespaces-lp:822540-test (&optional arg)
@@ -1520,11 +1641,18 @@ if foo:
     (py-bug-tests-intern 'closing-list-lp:826144-base arg teststring)))
 
 (defun closing-list-lp:826144-base ()
-  (goto-char 241)
-  (assert (eq 12 (py-compute-indentation)) nil "infinite-loop-after-tqs-lp:826044-test failed")
-  (goto-char 251)
-  (assert (eq 8 (py-compute-indentation)) nil "infinite-loop-after-tqs-lp:826044-test failed")
-  )
+  (let (py-closing-list-dedents-bos)
+    (goto-char (point-min))
+    (re-search-forward ") *$" nil t 1)
+    (assert (eq 12 (py-compute-indentation)) nil "closing-list-lp:826144-test #1 failed")
+    (re-search-forward ") *$" nil t 1)
+    (assert (eq 8 (py-compute-indentation)) nil "closing-list-lp:826144-test #2 failed")
+    (setq py-closing-list-dedents-bos t)
+    (goto-char (point-min))
+    (re-search-forward ") *$" nil t 1)
+    (assert (eq 8 (py-compute-indentation)) nil "closing-list-lp:826144-test #1 failed")
+    (re-search-forward ") *$" nil t 1)
+    (assert (eq 4 (py-compute-indentation)) nil "closing-list-lp:826144-test #2 failed")))
 
 (defun py-electric-comment-add-space-lp:828398-test (&optional arg)
   (interactive "p")
@@ -1549,7 +1677,7 @@ if foo:
 (defun execute-indented-code-lp:828314-test (&optional arg)
   (interactive "p")
   (let ((teststring "if __name__ == \"__main__\":
-    print \"hello, I'm the execute-indented-code-lp:828314-test\"
+    print(\"hello, I'm the execute-indented-code-lp:828314-test\")
 "))
     (py-bug-tests-intern 'execute-indented-code-lp:828314-base 2 teststring)))
 
@@ -1648,8 +1776,8 @@ newObj = SomeClassWithManyManyArgs (param0 = val0,
   (let ((teststring (concat py-test-shebang "
 # -\*- coding: utf-8 -\*-
 
-print 'hello'
-print 'world'
+print('hello')
+print('world')
 ")))
     (py-bug-tests-intern 'py-shift-preserve-active-region-lp:857837-base arg teststring)))
 
@@ -1842,8 +1970,8 @@ def foo():
 def foo():
     for i in range(10):
         for j in range(10):
-            print i, j
-        print 'next'
+            print(i, j)
+        print('next')
 
 ")))
     (py-bug-tests-intern 'incorrect-use-of-region-in-py-shift-left-lp:875951-base arg teststring)))
@@ -2118,7 +2246,7 @@ This module is an optparse-inspired command-line parsing library that:
   (let ((teststring (concat py-test-shebang "
 # -*- coding: utf-8 -*-
 def doSomething(blah)
-print \"\"\"Es müsste \"müßte\" heißen.\"\"\"
+print(\"\"\"Es müsste \"müßte\" heißen.\"\"\")
 ")))
     (py-bug-tests-intern 'py-forward-into-nomenclature-lp:916818-base arg teststring)))
 
@@ -2179,26 +2307,24 @@ return SOME_Constant + blah
   ;; (py-shell nil nil "ipython" 'noswitch)
   (let ((teststring (concat py-ipython-test-shebang "
 # -*- coding: utf-8 -*-
-impo
-ex")))
+ex
+")))
     (py-bug-tests-intern 'py-ipython-complete-lp:927136-base arg teststring)))
 
 (defun py-ipython-complete-lp:927136-base ()
-  (goto-char 53)
-  (save-excursion (ipython-complete))
-  (sit-for 0.1)
-  (assert (looking-at "import") nil "py-ipython-complete-lp:927136-test #1 failed")
-  (goto-char 62)
-  (sit-for 0.1)
+  (goto-char (point-min))
+  (search-forward "ex")
   (ipython-complete)
-  (assert (buffer-live-p (get-buffer "*IPython Completions*")) nil "py-ipython-complete-lp:927136-test #2 lp:1026705 failed"))
+  (sit-for 0.1)
+  (assert (buffer-live-p (get-buffer "*IPython Completions*")) nil "py-ipython-complete-lp:927136-test #2 lp:1026705 failed")
+  )
 
 (defun execute-buffer-ipython-fails-lp:928087-test (&optional arg)
   (interactive "p")
   (let ((teststring (concat py-ipython-test-shebang "
 # -*- coding: utf-8 -*-
-print 4 + 5
-print u'\\xA9'
+print(4 + 5)
+print(u'\\xA9')
 ")))
     (py-bug-tests-intern 'execute-buffer-ipython-fails-lp:928087-base arg teststring)))
 
@@ -2249,9 +2375,10 @@ I am using version 6.0.4
 
 (defun py-mark-expression-marks-too-much-lp:941140-base ()
   (goto-char 60)
-  (assert (eq 73 (cdr (py-expression))) nil "py-mark-expression-marks-too-much-lp:941140-test failed")
+
+  (assert (string-match "some" (py-expression)) nil "py-mark-expression-marks-too-much-lp:941140-test failed")
   (goto-char 417)
-  (assert (eq 418 (cdr (py-expression))) nil "py-mark-expression-marks-too-much-lp:941140-test failed"))
+  (assert (string-match "a" (py-expression)) nil "py-mark-expression-marks-too-much-lp:941140-test failed"))
 
 ;;; Py-shell tests
 (defun py-shell-invoking-python-lp:835151-test (&optional arg)
@@ -2261,7 +2388,7 @@ I am using version 6.0.4
 
 (defun py-shell-invoking-python-lp:835151-base ()
   (setq py-shell-name "python")
-  (assert (markerp (py-execute-buffer)) nil "py-shell-invoking-python-lp:835151-test failed"))
+  (assert (stringp (py-execute-buffer)) nil "py-shell-invoking-python-lp:835151-test failed"))
 
 (defun py-shell-invoking-ipython-lp:835151-test (&optional arg)
   (interactive "p")
@@ -2270,7 +2397,7 @@ I am using version 6.0.4
 
 (defun py-shell-invoking-ipython-lp:835151-base ()
   (setq py-shell-name "ipython")
-  (assert (markerp (py-execute-buffer "ipython")) nil "py-shell-invoking-ipython-lp:835151-test failed"))
+  (assert (stringp (py-execute-buffer "ipython")) nil "py-shell-invoking-ipython-lp:835151-test failed"))
 
 (defun py-shell-invoking-python3-lp:835151-test (&optional arg)
   (interactive "p")
@@ -2279,7 +2406,7 @@ I am using version 6.0.4
 
 (defun py-shell-invoking-python3-lp:835151-base ()
   (setq py-shell-name "python3")
-  (assert (markerp (py-execute-buffer)) nil "py-shell-invoking-python3-lp:835151-test failed"))
+  (assert (py-execute-buffer) nil "py-shell-invoking-python3-lp:835151-test failed"))
 
 (defun py-shell-invoking-python2-lp:835151-test (&optional arg)
   (interactive "p")
@@ -2288,7 +2415,7 @@ I am using version 6.0.4
 
 (defun py-shell-invoking-python2-lp:835151-base ()
   (setq py-shell-name "python2")
-  (assert (markerp (py-execute-buffer)) nil "py-shell-invoking-python2-lp:835151-test failed"))
+  (assert (py-execute-buffer) nil "py-shell-invoking-python2-lp:835151-test failed"))
 
 (defun py-shell-invoking-python2.7-lp:835151-test (&optional arg)
   (interactive "p")
@@ -2297,7 +2424,7 @@ I am using version 6.0.4
 
 (defun py-shell-invoking-python2.7-lp:835151-base ()
   (setq py-shell-name "python2.7")
-  (assert (markerp (py-execute-buffer)) nil "py-shell-invoking-python2.7-lp:835151-test failed"))
+  (assert (py-execute-buffer) nil "py-shell-invoking-python2.7-lp:835151-test failed"))
 
 (defun py-shell-invoking-jython-lp:835151-test (&optional arg)
   (interactive "p")
@@ -2306,9 +2433,8 @@ I am using version 6.0.4
 
 (defun py-shell-invoking-jython-lp:835151-base ()
   (let ((py-shell-name "jython")
-        (erg (py-execute-buffer)))
-    (sit-for 0.1)
-    (assert (markerp erg) nil "py-shell-invoking-jython-lp:835151-test failed")))
+        (sit-for 0.1))
+    (assert (py-execute-buffer) nil "py-shell-invoking-jython-lp:835151-test failed")))
 
 (defun py-shell-invoking-python3.2-lp:835151-test (&optional arg)
   (interactive "p")
@@ -2317,7 +2443,7 @@ I am using version 6.0.4
 
 (defun py-shell-invoking-python3.2-lp:835151-base ()
   (setq py-shell-name "python3.2")
-  (assert (markerp (py-execute-buffer)) nil "py-shell-invoking-python3.2-lp:835151-test failed"))
+  (assert (py-execute-buffer) nil "py-shell-invoking-python3.2-lp:835151-test failed"))
 
 (defun py-mark-block-clause-misbehave-lp:949310-test (&optional arg)
   (interactive "p")
@@ -2362,7 +2488,7 @@ I am using version 6.0.4
 # -*- coding: utf-8 -*-
 if x > 0:
     for i in range(100):
-        # print i
+        # print(i)
 ")))
     (py-bug-tests-intern 'py-indent-comments-nil-ignored-lp:958721-base arg teststring)))
 
@@ -2508,6 +2634,7 @@ print(\"I'm the script-buffer-appears-instead-of-python-shell-buffer-lp:957561-t
         (py-split-windows-on-execute-p t))
     (delete-other-windows)
     (ipython)
+    (sit-for 0.1)
     (assert (and (py-execute-buffer-ipython) (set-buffer "script-buffer-appears-instead-of-python-shell-buffer-lp:957561-test") (not (window-full-height-p))) nil "script-buffer-appears-instead-of-python-shell-buffer-lp:957561-test failed")))
 
 (defun new-problem-with-py-temp-directory-lp:965762-test (&optional arg)
@@ -2535,11 +2662,11 @@ print(\"I'm the script-buffer-appears-instead-of-python-shell-buffer-lp:957561-t
 # -*- coding: utf-8 -*-
 # So while in this case, range() refers to the built-in function:
 
-print range(10)
+print(range(10))
 
 # in this case, it's just a method on some object:
 
-print myobj.range(10)
+print(myobj.range(10))
 
 # The two 'range's have no relationship at all.
 # That's why I suggest that the former be colored with py-builtins-face but the latter by default face.
@@ -2645,7 +2772,7 @@ print(\"I'm the temp-buffer-affected-by-py-shell-name-lp:958987-test\")
 
 (defun temp-buffer-affected-by-py-shell-name-lp:958987-base ()
   (message "%s" py-shell-name)
-  (assert (markerp (py-execute-buffer)) nil "temp-buffer-affected-by-py-shell-name-lp:958987-test failed"))
+  (assert (py-execute-buffer) nil "temp-buffer-affected-by-py-shell-name-lp:958987-test failed"))
 
 (defun toggle-force-local-shell-lp:988091-test (&optional arg)
   (interactive "p")
@@ -2692,7 +2819,8 @@ os.chmod
 
 (defun py-describe-symbol-fails-on-modules-lp:919719-base ()
   (goto-char 61)
-  (py-describe-symbol)
+  (py-help-at-point)
+  (sit-for 0.1)
   (set-buffer "*Python-Help*")
   (goto-char (point-min))
   (assert (looking-at "Help on built-in function chmod in os:")  nil "py-describe-symbol-fails-on-modules-lp:919719-test failed"))
@@ -2779,7 +2907,7 @@ CLASS_INS.someDe
     (write-file testfile2)
     (goto-char 107)
     (unwind-protect
-        (py-python-script-complete)
+        (py-shell-complete)
       (beginning-of-line))
     (when (file-readable-p testfile1) (delete-file testfile1))
     (when (file-readable-p testfile2) (delete-file testfile2)))
@@ -2804,8 +2932,12 @@ basd
 
 (defun no-completion-at-all-lp:1001328-base ()
   (goto-char 40)
-  (py-python-script-complete)
+  (py-shell-complete)
   (beginning-of-line)
+  (sit-for 0.1)
+  (unless (looking-at "basdklfjasdf")
+
+    (py-shell-complete))
   (sit-for 0.1)
   (assert (looking-at "basdklfjasdf") nil "no-completion-at-all-lp:1001328-test failed"))
 
@@ -2821,7 +2953,6 @@ def test_bu():
 
 (defun not-that-useful-completion-lp:1003580-base ()
   (goto-char 86)
-  ;; (py-python-script-complete)
   (py-shell-complete nil t)
   (assert (string-match  "^numpy." (car py-shell-complete-debug)) nil "not-that-useful-completion-lp:1003580-test failed"))
 
@@ -2834,8 +2965,8 @@ ex
     (py-bug-tests-intern 'completion-fails-in-python-script-r989-lp:1004613-base arg teststring)))
 
 (defun completion-fails-in-python-script-r989-lp:1004613-base ()
-  (when (buffer-live-p (get-buffer "*Python Completions*"))
-    (kill-buffer "*Python Completions*"))
+  (when (buffer-live-p (get-buffer py-python-completions))
+    (kill-buffer py-python-completions))
   (goto-char 51)
   (ipython-complete nil nil nil nil nil nil t)
   (set-buffer "*IPython Completions*")
@@ -2884,25 +3015,26 @@ re.s
 (defun completion-at-gentoo-lp-1008842-base ()
   (goto-char 62)
   (py-shell-complete)
-  (assert (buffer-live-p (get-buffer  "*Python Completions*")) nil "completion-at-gentoo-lp-1008842-test failed"))
+  (sit-for 0.1)
+  (assert (buffer-live-p (get-buffer  py-python-completions)) nil "completion-at-gentoo-lp-1008842-test failed"))
 
-(defun converts-tabs-to-spaces-in-indent-tabs-mode-t-lp-1019128.py-test (&optional arg)
+(defun converts-tabs-to-spaces-in-indent-tabs-mode-t-lp-1019128-test (&optional arg)
   (interactive "p")
   (let ((teststring "#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 setup(
 	name = \"fail2ban\",
 "))
-    (py-bug-tests-intern 'converts-tabs-to-spaces-in-indent-tabs-mode-t-lp-1019128.py-base arg teststring)))
+    (py-bug-tests-intern 'converts-tabs-to-spaces-in-indent-tabs-mode-t-lp-1019128-base arg teststring)))
 
-(defun converts-tabs-to-spaces-in-indent-tabs-mode-t-lp-1019128.py-base ()
+(defun converts-tabs-to-spaces-in-indent-tabs-mode-t-lp-1019128-base ()
   (let ((indent-tabs-mode t))
     (goto-char 74)
     (py-newline-and-indent)
     (beginning-of-line))
-  (assert (looking-at "\t") nil "converts-tabs-to-spaces-in-indent-tabs-mode-t-lp-1019128.py-test failed"))
+  (assert (looking-at "\t") nil "converts-tabs-to-spaces-in-indent-tabs-mode-t-lp-1019128-test failed"))
 
-(defun return-statement-indented-incorrectly-lp-1019601.py-test (&optional arg)
+(defun return-statement-indented-incorrectly-lp-1019601-test (&optional arg)
   (interactive "p")
   (let ((teststring "#! /usr/bin/env python
 # -*- coding: utf-8 -*-
@@ -2912,11 +3044,11 @@ def foo():
     baz()
         return 1
 "))
-    (py-bug-tests-intern 'return-statement-indented-incorrectly-lp-1019601.py-base arg teststring)))
+    (py-bug-tests-intern 'return-statement-indented-incorrectly-lp-1019601-base arg teststring)))
 
-(defun return-statement-indented-incorrectly-lp-1019601.py-base ()
+(defun return-statement-indented-incorrectly-lp-1019601-base ()
   (goto-char 99)
-  (assert (eq 4 (py-compute-indentation)) nil "return-statement-indented-incorrectly-lp-1019601.py-test failed"))
+  (assert (eq 4 (py-compute-indentation)) nil "return-statement-indented-incorrectly-lp-1019601-test failed"))
 
 (defun pycomplete-imports-not-found-error-when-no-symbol-lp:1019791-test (&optional arg)
   (interactive "p")
@@ -3022,6 +3154,7 @@ for something:
   (py-bug-tests-intern 'complaint-about-non-ASCII-character-lp-1042949-base arg teststring)))
 
 (defun complaint-about-non-ASCII-character-lp-1042949-base ()
+  (sit-for 0.1)
   (assert (py-execute-buffer) nil "complaint-about-non-ASCII-character-lp-1042949-test failed"))
 
 (defun dont-indent-code-unnecessarily-lp-1048778-test (&optional arg)
@@ -3046,12 +3179,15 @@ def foo(a):
 (defun IndentationError-expected-an-indented-block-when-execute-lp-1055569-test (&optional arg)
   (interactive "p")
   (let ((teststring "if __name__ == '__main__':
-    print 'hello'
+    print('IndentationError-expected-an-indented-block-when-execute-lp-1055569-test')
 "))
-  (py-bug-tests-intern 'IndentationError-expected-an-indented-block-when-execute-lp-1055569-base arg teststring)))
+  (py-bug-tests-intern 'IndentationError-expected-an-indented-block-when-execute-lp-1055569-base 1 teststring)))
 
 (defun IndentationError-expected-an-indented-block-when-execute-lp-1055569-base ()
-    (assert (progn (py-execute-buffer) t) nil "IndentationError-expected-an-indented-block-when-execute-lp-1055569-test failed"))
+    (assert
+     (string= "IndentationError-expected-an-indented-block-when-execute-lp-1055569-test" (py-execute-buffer))
+     ;; (progn (py-execute-buffer) t)
+     nil "IndentationError-expected-an-indented-block-when-execute-lp-1055569-test failed"))
 
 (defun stalls-emacs-probably-due-to-syntax-highlighting-lp-1058261-test (&optional arg)
   (interactive "p")
@@ -4316,7 +4452,8 @@ print(\"I'm the \\\"impossible-to-execute-a-buffer-with-from-future-imports-lp-1
   (py-bug-tests-intern 'impossible-to-execute-a-buffer-with-from-future-imports-lp-1063884-base arg teststring)))
 
 (defun impossible-to-execute-a-buffer-with-from-future-imports-lp-1063884-base ()
-    (assert (py-execute-buffer) nil "impossible-to-execute-a-buffer-with-from-future-imports-lp-1063884-test failed"))
+  (sit-for 0.1)
+  (assert (py-execute-buffer) nil "impossible-to-execute-a-buffer-with-from-future-imports-lp-1063884-test failed"))
 
 (defun several-new-bugs-with-paragraph-filling-lp-1066489-test (&optional arg)
   (interactive "p")
@@ -4355,24 +4492,10 @@ class IBanManager(Interface):
   (py-bug-tests-intern 'several-new-bugs-with-paragraph-filling-lp-1066489-base arg teststring)))
 
 (defun several-new-bugs-with-paragraph-filling-lp-1066489-base ()
-  (goto-char 932)
-  (py-fill-paragraph)
-  (assert (re-search-forward "^ +:type email") nil "several-new-bugs-with-paragraph-filling-lp-1066489-test #1 failed")
-  (goto-char 220)
-  (push-mark)
-  (goto-char 1075)
-  (narrow-to-region 220 1045)
-  (py-fill-paragraph nil nil (point-min) (point-max))
-  (widen)
-  (assert (re-search-forward "^ +:type email") nil "several-new-bugs-with-paragraph-filling-lp-1066489-test #2 failed")
-  (goto-char 1108)
-  (push-mark)
-  (goto-char (point-max))
-  (py-fill-paragraph nil nil 1108 (point))
-  (widen)
-  (goto-char 1108)
-  (assert (re-search-forward "^ +:type email") nil "several-new-bugs-with-paragraph-filling-lp-1066489-test #3 failed")
-  (py-fill-paragraph))
+  (let (py-paragraph-fill-docstring-p)
+    (goto-char 932)
+    (py-fill-paragraph)
+    (assert (re-search-forward "^ +:type email") nil "several-new-bugs-with-paragraph-filling-lp-1066489-test failed")))
 
 (defun incorrect-indentation-of-one-line-functions-lp-1067633-test (&optional arg)
   (interactive "p")
@@ -4393,8 +4516,8 @@ def foo():
   (py-bug-tests-intern 'does-not-dedent-regions-lp-1072869-base arg teststring)))
 
 (defun does-not-dedent-regions-lp-1072869-base ()
-  (assert (markerp (py-execute-buffer-ipython)) nil "does-not-dedent-regions-lp-1072869-test #1 failed")
-  (assert (markerp (py-execute-buffer-python)) nil "does-not-dedent-regions-lp-1072869-test #2 failed")
+  (assert (py-execute-buffer-ipython) nil "does-not-dedent-regions-lp-1072869-test #1 failed")
+  (assert (py-execute-buffer-python) nil "does-not-dedent-regions-lp-1072869-test #2 failed")
   )
 
 (defun inconvenient-py-switch-buffers-on-execute-lp-1073-test (&optional arg)
@@ -4568,7 +4691,7 @@ def update():
 (defun fill-paragraph-in-comments-results-in-mess-lp-1084769-base ()
     (goto-char 266)
     (fill-paragraph)
-    (beginning-of-line) 
+    (beginning-of-line)
     (assert (looking-at "    ") nil "fill-paragraph-in-comments-results-in-mess-lp-1084769-test failed"))
 
 (defun py-execute-buffer-python3-looks-broken-lp-1085386-test (&optional arg)
@@ -4580,8 +4703,1525 @@ print(i)
   (py-bug-tests-intern 'py-execute-buffer-python3-looks-broken-lp-1085386-base arg teststring)))
 
 (defun py-execute-buffer-python3-looks-broken-lp-1085386-base ()
-  (let ((py-use-current-dir-when-execute-p t)) 
-    (assert (markerp (py-execute-buffer-python3)) nil "py-execute-buffer-python3-looks-broken-lp-1085386-test failed")))
+  (let ((py-use-current-dir-when-execute-p t))
+    (assert (py-execute-buffer-python3) nil "py-execute-buffer-python3-looks-broken-lp-1085386-test failed")))
+
+(defun wrong-indent-after-asignment-lp-1087404-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+a = 1
+# After pressing enter column 1 as expected
+b = [1]
+
+# Now after pressing enter indents to column 4
+
+"))
+  (py-bug-tests-intern 'wrong-indent-after-asignment-lp-1087404-base arg teststring)))
+
+(defun wrong-indent-after-asignment-lp-1087404-base ()
+    (goto-char 106)
+    (assert (eq 0 (py-compute-indentation)) nil "wrong-indent-after-asignment-lp-1087404-test failed"))
+
+(defun wrong-indentation-after-return-or-pass-keyword-lp-1087499-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+class Foo(self):
+    def bar(self):
+        return self.baz
+
+class Baz(self):
+    def bar(self):
+        pass
+
+"))
+  (py-bug-tests-intern 'wrong-indentation-after-return-or-pass-keyword-lp-1087499-base arg teststring)))
+
+(defun wrong-indentation-after-return-or-pass-keyword-lp-1087499-base ()
+  (goto-char 108)
+  (assert (eq 4 (py-compute-indentation)) nil "wrong-indentation-after-return-or-pass-keyword-lp-1087499-test failed")
+  (goto-char 158)
+  (assert (py-compute-indentation) nil "wrong-indentation-after-return-or-pass-keyword-lp-1087499-test failed"))
+
+(defun temporary-files-remain-when-python-raises-exception-lp-1083973-n1-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+import os
+import urllib
+os.chdir(\"NOT-EXISTING\")
+f = urllib.urlopen(\"NOT-EXISTING.html\")
+for lines in f:
+    print(lines)
+"))
+  (py-bug-tests-intern 'temporary-files-remain-when-python-raises-exception-lp-1083973-n1-base arg teststring)))
+
+(defun temporary-files-remain-when-python-raises-exception-lp-1083973-n1-base ()
+  (let ((python-mode-v5-behavior-p t))
+    (py-execute-buffer)
+    (assert (eobp)  nil "temporary-files-remain-when-python-raises-exception-lp-1083973-n1-test failed")))
+
+(defun temporary-files-remain-when-python-raises-exception-lp-1083973-n2-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+import os
+import urllib
+f = urllib.urlopen(\"NOT-EXISTING.html\")
+for lines in f:
+    print(lines)
+"))
+  (py-bug-tests-intern 'temporary-files-remain-when-python-raises-exception-lp-1083973-n2-base arg teststring)))
+
+(defun temporary-files-remain-when-python-raises-exception-lp-1083973-n2-base ()
+  (let ((python-mode-v5-behavior-p t))
+    (py-execute-buffer)
+    (assert (eq 72 (point)) nil "temporary-files-remain-when-python-raises-exception-lp-1083973-n2-test failed")))
+
+(defun temporary-files-remain-when-python-raises-exception-lp-1083973-n3-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+import os
+import urllib
+f = urllib.urlopen(\"NOT-EXISTING.html\")
+for lines in f:
+    print(lines)
+"))
+  (py-bug-tests-intern 'temporary-files-remain-when-python-raises-exception-lp-1083973-n3-base arg teststring)))
+
+(defun temporary-files-remain-when-python-raises-exception-lp-1083973-n3-base ()
+  (py-execute-buffer)
+  (assert (eq 163 (point)) nil "temporary-files-remain-when-python-raises-exception-lp-1083973-n3-test failed"))
+
+(defun temporary-files-remain-when-python-raises-exception-lp-1083973-n4-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+import os
+import urllib
+f = urllib.urlopen(\"NOT-EXISTING.html\")
+for lines in f:
+    print(lines)
+"))
+  (py-bug-tests-intern 'temporary-files-remain-when-python-raises-exception-lp-1083973-n4-base arg teststring)))
+
+(defun temporary-files-remain-when-python-raises-exception-lp-1083973-n4-base ()
+  (py-execute-buffer)
+  (switch-to-buffer (current-buffer))
+  (sit-for 0.1)
+  (message "Bin hier %s" (buffer-name (current-buffer)))
+  (assert (eq 163 (point)) nil "temporary-files-remain-when-python-raises-exception-lp-1083973-n4-test failed"))
+
+(defun comments-start-a-new-line-lp-1092847-n1-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+# I am using python-mode.el in Emacs to edit some Python code and it has the most annoying feature where it
+# auto-indents a comment and then starts a new line. For example, if I have this:
+
+def x():
+    y = 1
+<cursor is here, at root indentation level>
+
+And then add in one # at the root indentation level:
+
+def x():
+    y = 1
+
+    #
+<cursor is now here>
+
+# It automatically indents, inserts the #, and inserts a carriage return after the #. It's driving me crazy.
+# I want my comments to stay exactly where I put them! Any suggestions?
+
+# I've looked through the elisp code for the mode and can't find anything yet nor can I find anything
+# elsewhere online. All I can find is that comments won't be used for future indentation (py-honor-comment-
+# indentation) but nothing related to the comment itself. Nor the strange carriage return.
+
+"))
+  (py-bug-tests-intern 'comments-start-a-new-line-lp-1092847-n1-base arg teststring)))
+
+(defun comments-start-a-new-line-lp-1092847-n1-base ()
+  (let ((py-electric-comment-p t))
+    (goto-char 258)
+    (py-electric-comment 1)
+    (back-to-indentation)
+    (assert (eq 4 (current-column)) nil "comments-start-a-new-line-lp-1092847-n1-test failed")))
+
+(defun comments-start-a-new-line-lp-1092847-n2-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+# I am using python-mode.el in Emacs to edit some Python code and it has the most annoying feature where it
+# auto-indents a comment and then starts a new line. For example, if I have this:
+
+def x():
+    y = 1
+<cursor is here, at root indentation level>
+
+And then add in one # at the root indentation level:
+
+def x():
+    y = 1
+
+    #
+<cursor is now here>
+
+# It automatically indents, inserts the #, and inserts a carriage return after the #. It's driving me crazy.
+# I want my comments to stay exactly where I put them! Any suggestions?
+
+# I've looked through the elisp code for the mode and can't find anything yet nor can I find anything
+# elsewhere online. All I can find is that comments won't be used for future indentation (py-honor-comment-
+# indentation) but nothing related to the comment itself. Nor the strange carriage return.
+
+"))
+  (py-bug-tests-intern 'comments-start-a-new-line-lp-1092847-n2-base arg teststring)))
+
+(defun comments-start-a-new-line-lp-1092847-n2-base ()
+  (let ((py-electric-comment-p nil))
+    (goto-char 258)
+    (py-electric-comment 1)
+    (back-to-indentation)
+    (assert (eq 0 (current-column)) nil "comments-start-a-new-line-lp-1092847-n2-test failed")))
+
+(defun filename-completion-fails-in-ipython-lp-1027265-n1-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+a = open('/ho')
+"))
+  (py-bug-tests-intern 'filename-completion-fails-in-ipython-lp-1027265-n1-base arg teststring)))
+
+(defun filename-completion-fails-in-ipython-lp-1027265-n1-base ()
+    (goto-char 61)
+    (completion-at-point)
+    (assert (eq 63 (point)) nil "filename-completion-fails-in-ipython-lp-1027265-n1-test failed"))
+
+(defun filename-completion-fails-in-ipython-lp-1027265-n2-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env ipython
+# -*- coding: utf-8 -*-
+a = open('/ho')
+"))
+  (py-bug-tests-intern 'filename-completion-fails-in-ipython-lp-1027265-n2-base arg teststring)))
+
+(defun filename-completion-fails-in-ipython-lp-1027265-n2-base ()
+    (goto-char 62)
+    (completion-at-point)
+    (assert (eq 65 (point)) nil "filename-completion-fails-in-ipython-lp-1027265-n2-test failed"))
+
+(defun enter-key-does-not-indent-properly-after-return-statement-lp-1098793-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+def foo():
+    while something():
+        bar()
+    baz()
+    return 1
+
+# Once the cursor is placed after \"return 1\" and I hit enter, on the next line, the cursor is placed under
+# the \"r\" in return statement, instead of moving indentation to the outer block.
+#
+# \"ENTER\" key is bound to (py-newline-and-indent)
+#
+# Some version information:
+#
+# emacs-version
+# \"GNU Emacs 24.2.1 (i686-pc-cygwin) of 2012-08-27 on fiona\"
+# py-version
+# \"6.1.0\"
+
+"))
+  (py-bug-tests-intern 'enter-key-does-not-indent-properly-after-return-statement-lp-1098793-base arg teststring)))
+
+(defun enter-key-does-not-indent-properly-after-return-statement-lp-1098793-base ()
+    (goto-char 119)
+    (assert (eq 0 (py-compute-indentation)) nil "enter-key-does-not-indent-properly-after-return-statement-lp-1098793-test failed"))
+
+(defun py-up-test-python-el-111-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -\*- coding: utf-8 -\*-
+# up-list: Scan error: \"Unbalanced parentheses\"
+# Hi, when I press C-M-u in python buffer I get:
+#
+# up-list: Scan error: \"Unbalanced parentheses\"
+
+# My expected behavior is something like this:
+#
+# Scenario: Going higher level by C-M-u
+#     When I insert:
+
+# def f():
+#    if True:
+#        [i for i in range(3)]
+
+#     And I am looking at \"3)]\"
+#     And I press C-M-u
+#     Then I should looking at \"(3)]\"
+#     And I press C-M-u
+#     Then I should looking at \"[i for i\"
+#     And I press C-M-u
+#     Then I should looking at \"if True\"
+#     And I press C-M-u
+#     Then I should looking at \"def f\"
+#
+# related: #106
+
+def f():
+    if True:
+        print(\"[i for i in range(3)]: %s \" % ([i for i in range(3)]))
+
+"))
+  (py-bug-tests-intern 'py-up-test-python-el-111-base arg teststring)))
+
+(defun py-up-test-python-el-111-base ()
+    (goto-char 757)
+    (assert (eq 756 (py-up)) nil "py-up-test-python-el-111-test #1 failed")
+    (assert (eq 739 (py-up)) nil "py-up-test-python-el-111-test #2 failed")
+    (assert (eq 738 (py-up)) nil "py-up-test-python-el-111-test #3 failed")
+    (assert (eq 706 (py-up)) nil "py-up-test-python-el-111-test #4 failed")
+    (assert (eq 701 (py-up)) nil "py-up-test-python-el-111-test #5 failed")
+    (assert (eq 684 (py-up)) nil "py-up-test-python-el-111-test #6 failed")
+    (assert (eq 671 (py-up)) nil "py-up-test-python-el-111-test #7 failed")
+    (goto-char 726)
+    (assert (eq 707 (py-up)) nil "py-up-test-python-el-111-test #8 failed")
+    (assert (eq 706 (py-up)) nil "py-up-test-python-el-111-test #9 failed")
+    )
+
+(defun py-down-python-el-112-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+# Scenario: Going lover level by C-M-d
+#     When I insert:
+
+class C(object):
+    def m(self):
+        if True:
+            return [i for i in range(3)]
+        else:
+            return []
+
+    # And I am looking at \"class C\"
+    # And I press C-M-d
+    # Then I should looking at \"def m\"
+    # And I press C-M-d
+    # Then I should looking at \"if True\"
+    # And I press C-M-d
+    # Then I should looking at \"i for i\"
+    # And I press C-M-d
+    # Then I should looking at \"3\"
+
+# Current version of C-M-d jumps to inside of (object)
+# because it is just a plain down-list. I think it's
+# better to have python-specific one for symmetry.
+
+"))
+  (py-bug-tests-intern 'py-down-python-el-112-base arg teststring)))
+
+(defun py-down-python-el-112-base ()
+    (goto-char 109)
+    (assert (eq 130 (py-down)) nil "py-down-test-python-el-112-test #1 failed")
+    (assert (eq 151 (py-down)) nil "py-down-test-python-el-112-test #2 failed")
+    (assert (eq 172 (py-down)) nil "py-down-test-python-el-112-test #3 failed")
+    (assert (eq 179 (py-down)) nil "py-down-test-python-el-112-test #4 failed")
+    (assert (eq 196 (py-down)) nil "py-down-test-python-el-112-test #5 failed")
+)
+
+(defun py-underscore-word-syntax-p-customization-has-no-effect-lp-1100947-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+_
+"))
+  (py-bug-tests-intern 'py-underscore-word-syntax-p-customization-has-no-effect-lp-1100947-base arg teststring)))
+
+(defun py-underscore-word-syntax-p-customization-has-no-effect-lp-1100947-base ()
+  (goto-char 48)
+  (py-underscore-word-syntax-p-on)
+  (assert (eq 119 (char-syntax (char-after))) nil "py-underscore-word-syntax-p-customization-has-no-effect-lp-1100947-test #1 failed")
+  (py-underscore-word-syntax-p-off)
+  (assert (eq 95 (char-syntax (char-after))) nil "py-underscore-word-syntax-p-customization-has-no-effect-lp-1100947-test #2 failed")
+  (py-underscore-word-syntax-p-on)
+  (assert (eq 119 (char-syntax (char-after))) nil "py-underscore-word-syntax-p-customization-has-no-effect-lp-1100947-test #3 failed")
+)
+
+(defun py-newline-and-indent-leaves-eol-whitespace-lp-1100892-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -\*- coding: utf-8 -\*-
+# py-newline-and-indent leaves extra whitespace at eol if used inside an existing construct. It should
+# instead clean up all trailing whitespace. I believe this is a regression.
+
+def foo():
+    x = some_long_call(supercalifragilistic=6, expialidocious=7)
+
+# Now, put point on the 'e' of expialidocious and hit RET
+
+# You will see that there's an extra space left after the \"6, \". All trailing whitespace should instead be
+# removed.
+
+"))
+  (py-bug-tests-intern 'py-newline-and-indent-leaves-eol-whitespace-lp-1100892-base arg teststring)))
+
+(defun py-newline-and-indent-leaves-eol-whitespace-lp-1100892-base ()
+  (let ((py-newline-delete-trailing-whitespace-p t))
+    (goto-char 286)
+    (py-newline-and-indent)
+    (sit-for 0.1)
+    (skip-chars-backward " \t\r\n\f")
+    (assert (eq (char-after) 10) nil "py-newline-and-indent-leaves-eol-whitespace-lp-1100892-test failed")))
+
+(defun module-docstring-when-following-comment-lp-1102011-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "# -*- coding: utf-8 -*-
+# *****************************************************************************
+# <Name of software>
+# Copyright (c) 2009-2012 by the contributors (see AUTHORS)
+#
+# This program is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation; either version 2 of the License, or (at your option) any later
+# version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc.,
+# 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+# Module authors:
+# Georg Brandl <email address>
+#
+# *****************************************************************************
+\"\"\"Some docstring.\"\"\"
+
+__version__ = \"\$Revision\$\"
+
+"))
+  (py-bug-tests-intern 'module-docstring-when-following-comment-lp-1102011-base arg teststring)))
+
+(defun module-docstring-when-following-comment-lp-1102011-base ()
+  (let ((py-use-font-lock-doc-face-p t))
+    (goto-char 1024)
+    (python-mode)
+    (font-lock-fontify-buffer)
+    (sit-for 1)
+    (assert (eq (face-at-point) 'font-lock-doc-face) nil "module-docstring-when-following-comment-lp-1102011-test failed")))
+
+(defun ipython-complete-lp-1102226-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env ipython
+# -*- coding: utf-8 -*-
+import re
+re.
+"))
+  (py-bug-tests-intern 'ipython-complete-lp-1102226-base arg teststring)))
+
+(defun ipython-complete-lp-1102226-base ()
+  (and (featurep 'company)(company-mode -1))
+  (goto-char 62)
+  (ipython-complete)
+  ;; (set-buffer "*IPython Completions*")
+  ;; (switch-to-buffer (current-buffer))
+  (assert (bufferp (get-buffer "*IPython Completions*")) nil "ipython-complete-lp-1102226-test failed"))
+
+(defun more-docstring-filling-woes-lp-1102296-pep-257-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+# (I selected \"PEP-257-NN\" as the docstring fill style.)
+# Given the following code:
+
+class Test(object):
+    \"\"\"
+    Builds target formats from the reST sources.
+    \"\"\"
+
+    def method1(self):
+        \"\"\"Return the template bridge configured.\"\"\"
+        pass
+
+    def method2(self):
+        \"\"\"Load necessary templates and perform initialization. The default implementation does nothing.
+        \"\"\"
+        pass
+
+# There are three misbehaviors here:
+# \* should have removed the whitespace at the beginning and end of the class docstring
+# \* in method1, the \"pass\" should remain on its own line
+# \* in method2, the closing triple-quote should get its own line, and the \"pass\" too
+
+"))
+  (py-bug-tests-intern 'more-docstring-filling-woes-lp-1102296-pep-257-base arg teststring)))
+
+(defun more-docstring-filling-woes-lp-1102296-pep-257-base ()
+  (let ((py-docstring-style 'pep-257))
+    (goto-char 178)
+    (assert (fill-paragraph) nil "more-docstring-filling-woes-lp-1102296-pep-257-test #1 failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-pep-257-test #1 done")
+    (goto-char 259)
+    (fill-paragraph)
+    (forward-line 1)
+    (assert (looking-at "        pass") nil "more-docstring-filling-woes-lp-1102296-pep-257-test #2 failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-pep-257-test #2 done")
+    (goto-char 357)
+    (fill-paragraph)
+    (goto-char 436)
+    (sit-for 0.1)
+    (assert (empty-line-p) nil "more-docstring-filling-woes-lp-1102296-pep-257-test #3a failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-pep-257-test #3a done")
+    (forward-line 2)
+    (assert (looking-at "        pass") nil "more-docstring-filling-woes-lp-1102296-pep-257-test #3c failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-pep-257-test #3c done")))
+
+(defun more-docstring-filling-woes-lp-1102296-onetwo-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+# (I selected \"PEP-257-NN\" as the docstring fill style.)
+# Given the following code:
+
+class Test(object):
+    \"\"\"
+    Builds target formats from the reST sources.
+    \"\"\"
+
+    def method1(self):
+        \"\"\"Return the template bridge configured.\"\"\"
+        pass
+
+    def method2(self):
+        \"\"\"Load necessary templates and perform initialization. The default implementation does nothing.
+        \"\"\"
+        pass
+
+# There are three misbehaviors here:
+# \* should have removed the whitespace at the beginning and end of the class docstring
+# \* in method1, the \"pass\" should remain on its own line
+# \* in method2, the closing triple-quote should get its own line, and the \"pass\" too
+
+"))
+  (py-bug-tests-intern 'more-docstring-filling-woes-lp-1102296-onetwo-base arg teststring)))
+
+(defun more-docstring-filling-woes-lp-1102296-onetwo-base ()
+  (let ((py-docstring-style 'onetwo))
+    (goto-char 178)
+    (assert (fill-paragraph) nil "more-docstring-filling-woes-lp-1102296-onetwo-test #1 failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-onetwo-test #1 done")
+    (goto-char 259)
+    (fill-paragraph)
+    (forward-line 1)
+    (assert (looking-at "        pass") nil "more-docstring-filling-woes-lp-1102296-onetwo-test #2 failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-onetwo-test #2 done")
+    (goto-char 357)
+    (fill-paragraph)
+    (beginning-of-line)
+    (sit-for 1)
+    ;; (message "%d" (skip-chars-forward " "))
+    (assert (eq (skip-chars-forward " ") 8) nil "more-docstring-filling-woes-lp-1102296-onetwo-test #3a failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-onetwo-test #3a done")
+    (save-excursion
+      (goto-char 357)
+      (forward-line 2)
+      (assert (empty-line-p) nil "more-docstring-filling-woes-lp-1102296-onetwo-test #3b failed")
+      (message "%s" "more-docstring-filling-woes-lp-1102296-onetwo-test #3b done"))
+    (forward-line 1)
+    (assert (looking-at "        pass") nil "more-docstring-filling-woes-lp-1102296-onetwo-test #3c failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-onetwo-test #3c done")))
+
+(defun more-docstring-filling-woes-lp-1102296-django-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+# (I selected \"PEP-257-NN\" as the docstring fill style.)
+# Given the following code:
+
+class Test(object):
+    \"\"\"
+    Builds target formats from the reST sources.
+    \"\"\"
+
+    def method1(self):
+        \"\"\"Return the template bridge configured.\"\"\"
+        pass
+
+    def method2(self):
+        \"\"\"Load necessary templates and perform initialization. The default implementation does nothing.
+        \"\"\"
+        pass
+
+# There are three misbehaviors here:
+# \* should have removed the whitespace at the beginning and end of the class docstring
+# \* in method1, the \"pass\" should remain on its own line
+# \* in method2, the closing triple-quote should get its own line, and the \"pass\" too
+
+"))
+  (py-bug-tests-intern 'more-docstring-filling-woes-lp-1102296-django-base arg teststring)))
+
+(defun more-docstring-filling-woes-lp-1102296-django-base ()
+  (let ((py-docstring-style 'django))
+    (goto-char 178)
+    (assert (fill-paragraph) nil "more-docstring-filling-woes-lp-1102296-django-test #1 failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-django-test #1 done")
+    (goto-char 259)
+    (fill-paragraph)
+    (forward-line 1)
+    (assert (looking-at "        pass") nil "more-docstring-filling-woes-lp-1102296-django-test #2 failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-django-test #2 done")
+    (goto-char 380)
+    (fill-paragraph)
+    (beginning-of-line)
+    (sit-for 0.1)
+    (assert (looking-at "        \"\"\"") nil "more-docstring-filling-woes-lp-1102296-django-test #3a failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-django-test #3a done")
+    (save-excursion
+      (goto-char 357)
+      (forward-line 1)
+      (assert (empty-line-p) nil "more-docstring-filling-woes-lp-1102296-django-test #3b failed")
+      (message "%s" "more-docstring-filling-woes-lp-1102296-django-test #3b done"))
+    (forward-line 1)
+    (assert (looking-at "        pass") nil "more-docstring-filling-woes-lp-1102296-django-test #3c failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-django-test #3c done")))
+
+(defun more-docstring-filling-woes-lp-1102296-symmetric-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+# (I selected \"PEP-257-NN\" as the docstring fill style.)
+# Given the following code:
+
+class Test(object):
+    \"\"\"
+    Builds target formats from the reST sources.
+    \"\"\"
+
+    def method1(self):
+        \"\"\"Return the template bridge configured.\"\"\"
+        pass
+
+    def method2(self):
+        \"\"\"Load necessary templates and perform initialization. The default implementation does nothing.
+        \"\"\"
+        pass
+
+# There are three misbehaviors here:
+# \* should have removed the whitespace at the beginning and end of the class docstring
+# \* in method1, the \"pass\" should remain on its own line
+# \* in method2, the closing triple-quote should get its own line, and the \"pass\" too
+
+"))
+  (py-bug-tests-intern 'more-docstring-filling-woes-lp-1102296-symmetric-base arg teststring)))
+
+(defun more-docstring-filling-woes-lp-1102296-symmetric-base ()
+  (let ((py-docstring-style 'symmetric))
+    (goto-char 178)
+    (assert (fill-paragraph) nil "more-docstring-filling-woes-lp-1102296-symmetric-test #1 failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-symmetric-test #1 done")
+    (goto-char 259)
+    (fill-paragraph)
+    (forward-line 1)
+    (assert (looking-at "        pass") nil "more-docstring-filling-woes-lp-1102296-symmetric-test #2 failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-symmetric-test #2 done")
+    (goto-char 380)
+    (fill-paragraph)
+    (beginning-of-line)
+    (sit-for 0.1)
+    (assert (looking-at "        \"\"\"") nil "more-docstring-filling-woes-lp-1102296-symmetric-test #3a failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-symmetric-test #3a done")
+    (forward-line 1)
+    (assert (looking-at "        pass") nil "more-docstring-filling-woes-lp-1102296-symmetric-test #3c failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-symmetric-test #3c done")))
+
+(defun line-after-colon-with-inline-comment-lp-1109946-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+def f():
+    if a:
+        b
+    if c: # inline comment
+
+        # |<---- cursor will not indent properly with <TAB>>
+"))
+  (py-bug-tests-intern 'line-after-colon-with-inline-comment-lp-1109946-base arg teststring)))
+
+(defun line-after-colon-with-inline-comment-lp-1109946-base ()
+  (let ((py-indent-honors-inline-comment t))
+    (goto-char 104)
+    (assert (eq 10 (py-compute-indentation)) nil "line-after-colon-with-inline-comment-lp-1109946-test failed")))
+
+(defun cascading-indent-lp-1101962-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+def foo():
+    pgdt = []
+    pdwd = []
+        cItemLik = [ ht(\"Item\", T.hr(), T.span(\"Like\", style=
+                            \"background-color: rgb( 229, 200, 136 )\")),
+                     lambda item: ht( item['!'], T.br(), like( item ))
+                     ]
+"))
+  (py-bug-tests-intern 'cascading-indent-lp-1101962-base arg teststring)))
+
+(defun cascading-indent-lp-1101962-base ()
+    (goto-char 87)
+    (assert (eq 4 (py-compute-indentation)) nil "cascading-indent-lp-1101962-test failed"))
+
+(defun python-mode-very-slow-lp-1107037-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "# Since the last few commits, python-mode is unbearably slow on nontrivial files. Even
+# just moving around in the file makes Emacs use 100% CPU for a few seconds.
+#
+# If this is due to the fix for lp:1102011, I would rather live with the highlight bug :)
+# Georg Brandl (gbrandl) wrote 11 hours ago: #2
+#
+# Try the file below. I have narrowed the problem to the fix for lp:1102011 -- the regex
+# \*must\* have pathological behavior (which wouldn't surprise me, such backtracking
+# problems are very hard to fix). In general, for that many lines between module start
+# and docstring, I think it is quite fine for python-mode not to color the docstring as
+# such. I think the number of permitted comment lines should be restricted to 2, in order
+# to accomodate a shebang line and a coding declaration.
+# -\*- coding: utf-8 -\*-
+# \*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*
+# <Name of software>
+# Copyright (c) 2009-2012 by the contributors (see AUTHORS)
+#
+# This program is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation; either version 2 of the License, or (at your option) any later
+# version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc.,
+# 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+#
+# Module authors:
+# Georg Brandl <email address>
+#
+# \*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*\*
+
+\"\"\"Some docstring.\"\"\"
+
+__version__ = \"$Revision: 1.76 $\"
+
+"))
+  (py-bug-tests-intern 'python-mode-very-slow-lp-1107037-base arg teststring)))
+
+(defun python-mode-very-slow-lp-1107037-base ()
+  (let ((py-use-font-lock-doc-face-p t))
+    (goto-char 1825)
+    (python-mode)
+    (font-lock-fontify-buffer)
+    (sit-for 1)
+    (assert (eq (face-at-point) 'font-lock-doc-face) nil "python-mode-very-slow-lp-1107037-test failed")))
+
+(defun add-custom-switch-for-ffap-hooks-lp-1117119-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+/usr/lib/pyt
+"))
+  (py-bug-tests-intern 'add-custom-switch-for-ffap-hooks-lp-1117119-base arg teststring)))
+
+(defun add-custom-switch-for-ffap-hooks-lp-1117119-base ()
+  (let ((py-ffap-p t)
+        (python-ffap t))
+    (goto-char 60)
+    (assert (member 'py-set-ffap-form python-mode-hook) nil "add-custom-switch-for-ffap-hooks-lp-1117119-test #1 failed")
+    ))
+
+(defun more-docstring-filling-woes-lp-1102296-nil-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+# (I selected \"PEP-257-NN\" as the docstring fill style.)
+# Given the following code:
+
+class Test(object):
+    \"\"\"
+    Builds target formats from the reST sources.
+    \"\"\"
+
+    def method1(self):
+        \"\"\"Return the template bridge configured.\"\"\"
+        pass
+
+    def method2(self):
+        \"\"\"Load necessary templates and perform initialization. The default implementation does nothing.
+        \"\"\"
+        pass
+
+# There are three misbehaviors here:
+# \* should have removed the whitespace at the beginning and end of the class docstring
+# \* in method1, the \"pass\" should remain on its own line
+# \* in method2, the closing triple-quote should get its own line, and the \"pass\" too
+
+"))
+  (py-bug-tests-intern 'more-docstring-filling-woes-lp-1102296-nil-base arg teststring)))
+
+(defun more-docstring-filling-woes-lp-1102296-nil-base ()
+  (let ((py-docstring-style nil))
+    (goto-char 178)
+    (assert (fill-paragraph) nil "more-docstring-filling-woes-lp-1102296-nil-test #1 failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-nil-test #1 done")
+    (goto-char 259)
+    (fill-paragraph)
+    (forward-line 1)
+    (sit-for 0.2)
+    (assert (looking-at "        pass") nil "more-docstring-filling-woes-lp-1102296-nil-test #2 failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-nil-test #2 done")
+    (goto-char 380)
+    (fill-paragraph)
+    (back-to-indentation)
+    (sit-for 0.1)
+    (assert (eq (char-after) 34) nil "more-docstring-filling-woes-lp-1102296-nil-test #3a failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-nil-test #3a done")
+    (search-forward "pass" nil t 1)
+    (beginning-of-line)
+    (assert (looking-at "        pass") nil "more-docstring-filling-woes-lp-1102296-nil-test #3c failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-nil-test #3c done")))
+
+(defun more-docstring-filling-woes-lp-1102296-pep-257-nn-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+# (I selected \"PEP-257-NN\" as the docstring fill style.)
+# Given the following code:
+
+class Test(object):
+    \"\"\"
+    Builds target formats from the reST sources.
+    \"\"\"
+
+    def method1(self):
+        \"\"\"Return the template bridge configured.\"\"\"
+        pass
+
+    def method2(self):
+        \"\"\"Load necessary templates and perform initialization. The default implementation does nothing.
+        \"\"\"
+        pass
+
+# There are three misbehaviors here:
+# \* should have removed the whitespace at the beginning and end of the class docstring
+# \* in method1, the \"pass\" should remain on its own line
+# \* in method2, the closing triple-quote should get its own line, and the \"pass\" too
+
+"))
+  (py-bug-tests-intern 'more-docstring-filling-woes-lp-1102296-pep-257-nn-base arg teststring)))
+
+(defun more-docstring-filling-woes-lp-1102296-pep-257-nn-base ()
+  (let ((py-docstring-style 'pep-257-nn))
+    (goto-char 178)
+    (assert (fill-paragraph) nil "more-docstring-filling-woes-lp-1102296-pep-257-nn-test #1 failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-pep-257-nn-test #1 done")
+    (goto-char 259)
+    (fill-paragraph)
+    (forward-line 1)
+    (assert (looking-at "        pass") nil "more-docstring-filling-woes-lp-1102296-pep-257-nn-test #2 failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-pep-257-nn-test #2 done")
+    (goto-char 357)
+    (fill-paragraph)
+    (beginning-of-line)
+    (sit-for 0.1)
+    (assert (eq (current-indentation) 8) nil "more-docstring-filling-woes-lp-1102296-pep-257-nn-test #3a failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-pep-257-nn-test #3a done")
+    (search-forward "pass")
+    (beginning-of-line)
+    (sit-for 0.1)
+    (assert (looking-at "        pass") nil "more-docstring-filling-woes-lp-1102296-pep-257-nn-test #3b failed")
+    (message "%s" "more-docstring-filling-woes-lp-1102296-pep-257-nn-test #3b done")))
+
+(defun infinite-loop-on-lp-1156426-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+while mvi.t2 <= T:
+
+# calculate a spline for the kinematic inputs
+#fname = 'data/monte_1000hz.mat'
+"))
+  (py-bug-tests-intern 'infinite-loop-on-lp-1156426-base arg teststring)))
+
+(defun infinite-loop-on-lp-1156426-base ()
+  (let ((py-indent-comments t))
+    (goto-char 68)
+    (assert (eq 4 (py-compute-indentation)) nil "infinite-loop-on-lp-1156426-test #1 failed"))
+  (goto-char (point-max))
+  (assert (eq 0 (py-compute-indentation)) nil "infinite-loop-on-lp-1156426-test #2 failed"))
+
+(defun fill-paragraph-in-docstring-lp-1161232-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "def foo ():
+    \"\"\"Returns a rewritten path.
+
+Assuming that ``cr`` is a :class:`ContextRewriter` instance, that the rewriter maps the path ``views/<filename>`` to asdf asdf asdf asdf asdf asdf asdf asdf asdfasdf asdfasdf asdf asdf \"\"\"
+    pass
+"))
+  (py-bug-tests-intern 'fill-paragraph-in-docstring-lp-1161232-base arg teststring)))
+
+(defun fill-paragraph-in-docstring-lp-1161232-base ()
+    (goto-char 94)
+    (fill-paragraph t)
+    (sit-for 0.1)
+    (assert (eq (point) 51) nil "fill-paragraph-in-docstring-lp-1161232-test #1 failed")
+    (goto-char 249)
+    (sit-for 1)
+    (message "%s" (buffer-substring-no-properties (line-beginning-position) (line-end-position) ))
+    (assert (looking-at "    pass") nil "fill-paragraph-in-docstring-lp-1161232-test #2 failed")
+    )
+
+(defun wfmc-lp-1160022-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+# which-func-misses-class-lp-1160022
+class kugel(object):
+    zeit = time.strftime('%Y%m%d--%H-%M-%S')
+    # zeit = time.strftime('%Y-%m-%d--%H-%M-%S')
+    spiel = []
+
+    def pylauf(self):
+        \"\"\"Eine Doku fuer pylauf\"\"\"
+        pass
+
+a = \"asdf\"
+"))
+  (py-bug-tests-intern 'wfmc-lp-1160022-base arg teststring)))
+
+(defun wfmc-lp-1160022-base ()
+  (imenu-add-menubar-index)
+  (goto-char 251)
+  (which-func-mode)
+  (company-mode -1)
+  (yas/minor-mode -1)
+  (hs-minor-mode -1)
+  (undo-tree-mode -1)
+  (abbrev-mode -1)
+  ;; (car (nth 2 (car '((#1="class kugel" (#1# . 85) ("kugel.pylauf" . 224))))))
+  (assert (string= "kugel.pylauf" (car (nth 2 (eval '(car imenu--index-alist))))) nil "wfmc-lp-1160022-test failed"))
+
+(defun tab-results-in-never-ending-process-lp-1163423-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -\*- coding: utf-8 -\*-
+    class asdf(object):
+        zeit = time.strftime('%Y%m%d--%H-%M-%S')
+
+        def utf8_exists(filename):
+            return os.path.exists(filename.encode('utf-8'))
+"))
+  (py-bug-tests-intern 'tab-results-in-never-ending-process-lp-1163423-base arg teststring)))
+
+(defun tab-results-in-never-ending-process-lp-1163423-base ()
+  (let ((py-tab-indents-region-p t)
+        (py-tab-indent t))
+    (goto-char 216)
+    (push-mark)
+    (goto-char 122)
+    (call-interactively 'py-indent-line)
+    (sit-for 0.1)
+    ;; (message "point: %s" (point))
+    (assert (bolp)  nil "tab-results-in-never-ending-process-lp-1163423-test failed")))
+
+(defun loops-on-if-else-lp-328777-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "x = (if 1: 2
+     else: 3)
+"))
+  (py-bug-tests-intern 'loops-on-if-else-lp-328777-base arg teststring)))
+
+(defun loops-on-if-else-lp-328777-base ()
+    (goto-char 14)
+    (assert (eq 5 (py-compute-indentation)) nil "loops-on-if-else-lp-328777-test failed"))
+
+(defun nested-dictionaries-indent-again-lp:1174174-test (&optional arg)
+  "With ARG greater 1 keep test buffer open.
+
+If no `load-branch-function' is specified, make sure the appropriate branch is loaded. Otherwise default python-mode will be checked. "
+  (interactive "p")
+  (let ((teststring "
+d = {'a':{'b':3,
+          'c':4
+          }
+     }
+
+d = {'a':{
+          'b':3,
+          'c':4
+         }
+     }
+"))
+    1174174
+    (py-bug-tests-intern 'nested-dictionaries-indent-again-lp:1174174 arg teststring)))
+
+(defun nested-dictionaries-indent-again-lp:1174174 ()
+  (let ((py-indent-honors-multiline-listing t))
+    (goto-char 19)
+    (assert (eq 10 (py-compute-indentation)) nil "nested-dictionaries-indent-again-lp:1174174-test #1 failed")
+    (goto-char 35)
+    (assert (eq 10 (py-compute-indentation)) nil "nested-dictionaries-indent-again-lp:1174174-test #2 failed")
+    (goto-char 47)
+    (assert (eq 5 (py-compute-indentation)) nil "nested-dictionaries-indent-again-lp:1174174-test #3 failed")
+    ;; (goto-char 57)
+    ;; (assert (eq 4 (py-compute-indentation)) nil "nested-dictionaries-indent-again-lp:1174174-test #4 failed")
+    ;; (goto-char 63)
+    ;; (assert (eq 0 (py-compute-indentation)) nil "nested-dictionaries-indent-again-lp:1174174-test #5 failed")
+
+    ))
+
+(defun TAB-leaves-point-in-the-wrong-lp-1178453-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+# r1225
+
+import tarfile
+
+src = tarfile.open('src.tgz', 'r:gz')
+dst = tarfile.open('dst.tgz', 'w:gz')
+
+for name in src.getnames():
+    print('name:', name)
+    info = src.getmember(name)
+    fp = src.extractfile(name)
+    dst.addfile(info, fp)
+
+src.close()
+dst.close()
+
+# Put point at the end of the `dst.addfile` line and hit return. Point is
+# properly left on the next line right under the first 'd'. Now hit TAB. Point is
+# correctly left at the beginning of the line. Hit TAB one more time.
+#
+# Now, while 4 spaces have been added to the beginning of the line, point is left
+# at the beginning of the line instead of at the end of the just inserted
+# whitespace. Point should be at column 4.
+"))
+  (py-bug-tests-intern 'TAB-leaves-point-in-the-wrong-lp-1178453-base arg teststring)))
+
+(defun TAB-leaves-point-in-the-wrong-lp-1178453-base ()
+    (goto-char 292)
+    (py-indent-line)
+    (assert (eq 4 (current-column)) nil "TAB-leaves-point-in-the-wrong-lp-1178453-test failed"))
+
+(defun Bogus-whitespace-left-in-docstring-after-wrapping-lp-1178455-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+# r1225
+
+def foo():
+    \"\"\"Line one of a comment.
+
+    A paragraph of comments. These should get wrapped correctly. These should get wrapped correctly.
+    These should get wrapped correctly.
+    They do, but whooboy!
+
+    Last line of comment.
+    \"\"\"
+
+# Put point somewhere in the middle paragraph and hit M-q (fill-paragraph).
+#
+# The paragraph gets properly wrapped, but the blank line before it and after it
+# get additional 4 bogus spaces at the beginning of their lines.
+"))
+  (py-bug-tests-intern 'Bogus-whitespace-left-in-docstring-after-wrapping-lp-1178455-base arg teststring)))
+
+(defun Bogus-whitespace-left-in-docstring-after-wrapping-lp-1178455-base ()
+  (goto-char 97)
+  (message "paragraph-start: %s" paragraph-start)
+  (message "Fehler? %s" (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
+  (fill-paragraph t)
+  (sit-for 0.1)
+  (message "Fehler? %s" (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
+  (forward-line 1)
+  (sit-for 1)
+  (assert (and (bolp) (eolp)) nil "Bogus-whitespace-left-in-docstring-after-wrapping-lp-1178455-test #1 failed")
+  (goto-char 140)
+  (fill-paragraph)
+  (end-of-line)
+  (assert (eq 70 (current-column)) nil "Bogus-whitespace-left-in-docstring-after-wrapping-lp-1178455-test #2 failed")
+  (forward-line 3)
+  (assert (and (bolp) (eolp)) nil "Bogus-whitespace-left-in-docstring-after-wrapping-lp-1178455-test #3 failed")
+  (goto-char 273)
+  (fill-paragraph)
+  (end-of-line)
+  (assert (eq 25 (current-column)) nil "Bogus-whitespace-left-in-docstring-after-wrapping-lp-1178455-test #4 failed"))
+
+(defun trouble-with-py-fill-paragraph-lp-1180653-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -\*- coding: utf-8 -\*-
+# I'm trying to refill the following docstring:
+
+class BlockCache(object):
+
+    def remove(self, inode, start_no, end_no=None):
+        \"\"\"Remove blocks for `inode`
+
+        If `end_no` is not specified, remove just the `start_no`
+        block.
+        Otherwise removes all blocks from `start_no` to, but not
+        including, `end_no`.
+
+        Note: if `get` and `remove` are called concurrently, then
+it is
+        possible that a block that has been requested with `get`
+and
+        passed to `remove` for deletion will not be deleted.
+        \"\"\"
+
+        log.debug('remove(inode=%d, start=%d, end=%s): start',
+inode, start_no, end_no)
+
+        if end_no is None:
+            end_no = start_no + 1
+
+# When I place the cursor on e.g. the first line (\"If `end_no`...)
+# and execute M-x py-fill-paragraph, the buffer is scrolled such that
+# this becomes the first visible line, and the indentation is
+# removed. No filling occurs at all.
+#
+# Am I doing something wrong? py-docstring-style is set to
+# pep-256-nn.
+"))
+  (py-bug-tests-intern 'trouble-with-py-fill-paragraph-lp-1180653-base arg teststring)))
+
+(defun trouble-with-py-fill-paragraph-lp-1180653-base ()
+    (goto-char 214)
+    (assert nil "trouble-with-py-fill-paragraph-lp-1180653-test failed"))
+
+(defun py-shell-in-a-shell-buffer-doesnt-work-lp:1182696-test (&optional arg)
+  (interactive "p")
+  (let ((teststring ""))
+  (py-bug-tests-intern 'py-shell-in-a-shell-buffer-doesnt-work-lp:1182696-base arg teststring)))
+
+(defun py-shell-in-a-shell-buffer-doesnt-work-lp:1182696-base ()
+  (let (py-split-windows-on-execute-p)
+    (shell)
+    (delete-other-windows)
+    ;; (set-buffer (py-shell))
+    (py-shell)
+    ;; (assert (string= "*shell*" (buffer-name)) nil "py-shell-in-a-shell-buffer-doesnt-work-lp:1182696-test #1 failed")
+    (assert (string= "*shell*" (buffer-name)) nil "py-shell-in-a-shell-buffer-doesnt-work-lp:1182696-test #1 failed")
+    (let ((py-switch-buffers-on-execute-p t))
+      (py-shell))
+    (sit-for 0.1)
+    (assert (string= "*Python*" (buffer-name)) nil "py-shell-in-a-shell-buffer-doesnt-work-lp:1182696-test #2 failed")))
+
+(defun from-within-py-shell-call-another-instance-lp-1169687-test (&optional arg)
+  (interactive "p")
+  (let ((teststring ""))
+  (py-bug-tests-intern 'from-within-py-shell-call-another-instance-lp-1169687-base arg teststring)))
+
+(defun from-within-py-shell-call-another-instance-lp-1169687-base ()
+    (let ((py-split-windows-on-execute-p t)
+          (py-switch-buffers-on-execute-p t))
+    (py-shell)
+    (sit-for 0.1)
+    (py-shell nil nil nil t nil nil nil t)
+    (assert (string-match "\\*Python\\*\<[0-9]+\>" (buffer-name)) nil "from-within-py-shell-call-another-instance-lp-1169687-test failed")))
+
+(defun multibuffer-mayhem-lp-1162q272-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+def do_something():
+wrong_indent
+"))
+  (py-bug-tests-intern 'multibuffer-mayhem-lp-1162272-base arg teststring)))
+
+(defun multibuffer-mayhem-lp-1162272-base ()
+    (assert (py-execute-buffer) nil "multibuffer-mayhem-lp-1162272-test failed"))
+
+(defun incorrect-indentation-with-tertiary-lp-1189604-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Put point right after the 'c' on the last line and hit return. You
+# will be indented to column 8 when you should be indented to column
+# 13.
+
+def foo(c):
+    a = 1
+    other = ('yes'
+             if a == c
+"))
+  (py-bug-tests-intern 'incorrect-indentation-with-tertiary-lp-1189604-base arg teststring)))
+
+(defun incorrect-indentation-with-tertiary-lp-1189604-base ()
+  (assert (eq 13 (py-compute-indentation)) nil "incorrect-indentation-with-tertiary-lp-1189604-test failed"))
+
+(defun indentation-doesnt-honor-comment-on-preceding-lp-1190288-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+# Put point at the end of the comment line and hit return. The next
+# line indents to column 8 when it should indent to column 4.
+
+def foo():
+    with bar() as baz:
+        baz.frobnicate()
+    # This is a comment
+"))
+  (py-bug-tests-intern 'indentation-doesnt-honor-comment-on-preceding-lp-1190288-base arg teststring)))
+
+(defun indentation-doesnt-honor-comment-on-preceding-lp-1190288-base ()
+    (assert (eq 4 (py-compute-indentation)) nil "indentation-doesnt-honor-comment-on-preceding-lp-1190288-test failed"))
+
+(defun fill-paragraph-corrupts-the-lp-1162912-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Put point on the whitespace at the beginning of the line that
+# starts with 'The' inside the docstring and hit M-q. You end up with
+# the following:
+#
+# -----snip snip-----
+# def foo():
+#     \"\"\"This is a function.
+# The function does some stuff that is very interesting. It's hard to
+#     describe, but you will certainly love it when you try it. It's
+# one
+#     of the best functions ever written, not just by me, but by all
+# of
+#     mankind. Well, that may be overstating it, but it is a wondeful
+#     function. \"\"\"
+
+def foo():
+    \"\"\"This is a function.
+
+    The function does some stuff that is very interesting. It's
+hard to
+    describe, but you will certainly love it when you try it. It's
+one of the
+    best functions ever written, not just by me, but by all of
+mankind.
+    Well, that may be overstating it, but it is a wondeful
+function.
+    \"\"\"
+
+"))
+  (py-bug-tests-intern 'fill-paragraph-corrupts-the-lp-1162912-base arg teststring)))
+
+(defun fill-paragraph-corrupts-the-lp-1162912-base ()
+    (goto-char 616)
+    (fill-paragraph)
+    (forward-line 1)
+    (assert (eq 4 (current-indentation))  nil "fill-paragraph-corrupts-the-lp-1162912-test failed"))
+
+(defun return-key-is-broken-lp-1191158-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+# A recent change broke the return key.
+#
+# Put point at the end of the last line and hit return. You correctly end
+# up on a new line at column 8. But hit return again and point doesn't
+# move! It should insert a blank line and leave you at column 8 on a new
+# line.
+
+def foo():
+    with open('foo') as fp:
+        do_something()"))
+  (py-bug-tests-intern 'return-key-is-broken-lp-1191158-base arg teststring)))
+
+(defun return-key-is-broken-lp-1191158-base ()
+  (goto-char 378)
+  (py-newline-and-indent)
+  (py-newline-and-indent)
+  (message "%s" (point) )
+  ;; (sit-for 0.1)
+  (assert (and (eq 14 (count-lines  (point-min) (point))) (eq 8 (current-column)))  nil "return-key-is-broken-lp-1191158-test failed"))
+
+(defun indent-refused-lp-1191133-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+def(foo):
+"))
+  (py-bug-tests-intern 'indent-refused-lp-1191133-base arg teststring)))
+
+(defun indent-refused-lp-1191133-base ()
+  (message "%s" (current-buffer))
+  ;; (switch-to-buffer (current-buffer))
+  (assert (eq 4 (py-compute-indentation)) nil "indent-refused-lp-1191133-test failed"))
+
+(defun Parens-span-multiple-lines-lp-1191225-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+# On Jun 14, 2013, at 05:04 PM, Felipe Reyes wrote:
+def foo():
+    if (foo &&
+        baz):
+        bar()
+# >> This example raises a pep8 warning[0],
+# >> I've been dealing with it and manually
+# >> adding another indentation level to not leave 'baz' aligned with 'baz
+# ()'
+# >>
+def foo():
+    if (foo &&
+            baz):
+        bar()
+"))
+  (py-bug-tests-intern 'Parens-span-multiple-lines-lp-1191225-base arg teststring)))
+
+(defun Parens-span-multiple-lines-lp-1191225-base ()
+  (let (py-indent-paren-spanned-multilines-p)
+    (goto-char 126)
+    (assert (eq 8 (py-compute-indentation)) nil "Parens-span-multiple-lines-lp-1191225-test #1 failed")
+    (goto-char 354)
+    (setq py-indent-paren-spanned-multilines-p t)
+    (assert (eq 12 (py-compute-indentation)) nil "Parens-span-multiple-lines-lp-1191225-test #2 failed")))
+
+(defun Bogus-dedent-when-typing-colon-in-dictionary-literal-lp-1197171-test (&optional arg)
+  (interactive "p")
+  (let
+      ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+def foo():
+    bar('thing',
+        {'another'
+
+# Put point at the end of the last line and hit colon, as you would to
+# separate the key from the value. The last line will incorrectly dedent
+# to column 4. Indentation should not change.
+
+"))
+    (py-bug-tests-intern 'Bogus-dedent-when-typing-colon-in-dictionary-literal-lp-1197171-base arg teststring)))
+
+(defun Bogus-dedent-when-typing-colon-in-dictionary-literal-lp-1197171-base ()
+    (goto-char 94)
+    (assert (eq 8 (py-compute-indentation)) nil "Bogus-dedent-when-typing-colon-in-dictionary-literal-lp-1197171-test failed"))
+
+(defun Non-indenting-colon-lp-1207405-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -\*- coding: utf-8 -\*-
+def foo(bar):
+ for i in range(10)
+        print(i)
+    tied = bar[
+
+# Put point on the last line, after the open bracket. Hit colon (as if you
+# were going to type bar[:]). The line gets incorrectly indented to under
+# the `print`.
+#
+# There may be other situations where colons should not re-indent the
+# line.
+
+"))
+  (py-bug-tests-intern 'Non-indenting-colon-lp-1207405-base arg teststring)))
+
+(defun Non-indenting-colon-lp-1207405-base ()
+  (goto-char 81)
+  (py-electric-colon t)
+  (message "(current-indentation): %s" (current-indentation))
+  (assert (eq 4 (current-indentation)) nil "Non-indenting-colon-lp-1207405-test #1 failed")
+  (goto-char 118)
+  (ignore-errors (py-electric-colon 1))
+  (assert (eq 4 (current-indentation)) nil "Non-indenting-colon-lp-1207405-test #2 failed"))
+
+;; (defun missing-py-variable-name-face-lp-1215791-test (&optional arg)
+;;   (interactive "p")
+;;    (let ((teststring "a = b = c = 5
+;; a, b, c = (1, 2, 3)
+;; # http://lists.gnu.org/archive/html/bug-gnu-emacs/2013-08/msg00740.
+;; # html
+;; #
+;; # The symptom is that in the code:
+;;
+;;     # no s'ha trobat cap oferta, l'alumne queda sense assignar
+;;     # (alumne.assignacio == None)
+;;     self._logger.info(
+;;          u\"no assigna '%s'\",
+;;          alumne.id
+;;          )
+;;     alumne.assignacio = None
+;;
+;; # 'alumne.assignacio' isn't properly colorized after visiting the
+;; # file.
+;; #
+;; # In order to reproduce this behaviour:
+;; #
+;; # emacs -Q /tmp/bugtest.py
+;; #
+;; # type:
+;;
+;; # a =
+;; variable = \"value\"
+;; a = b = c = 5
+;; a, b, c = (1, 2, 3)
+;; "))
+;;   (py-bug-tests-intern 'missing-py-variable-name-face-lp-1215791-base arg teststring)))
+
+(defun missing-py-variable-name-face-lp-1215791-test (&optional arg)
+  (interactive "p")
+   (let ((teststring "# a ==
+variable = \"value\"
+a = b = c = 5
+a, b, c = (1, 2, 3)
+# http://lists.gnu.org/archive/html/bug-gnu-emacs/2013-08/msg00740.
+# html
+#
+# The symptom is that in the code:
+
+    # no s'ha trobat cap oferta, l'alumne queda sense assignar
+    # (alumne.assignacio == None)
+    self._logger.info(
+         u\"no assigna '%s'\",
+         alumne.id
+         )
+    alumne.assignacio = None
+
+# 'alumne.assignacio' isn't properly colorized after visiting the
+# file.
+#
+# In order to reproduce this behaviour:
+
+"))
+  (py-bug-tests-intern 'missing-py-variable-name-face-lp-1215791-base arg teststring)))
+
+(defun missing-py-variable-name-face-lp-1215791-base ()
+  ;; (goto-char 6)
+  (goto-char 27)
+  (sit-for 0.1)
+  (assert (eq (get-char-property (point) 'face) 'py-variable-name-face) nil "missing-py-variable-name-face-lp-1215791-test #1 failed")
+  (goto-char 44)
+  (assert (eq (get-char-property (point) 'face) 'py-variable-name-face) nil "missing-py-variable-name-face-lp-1215791-test #2 failed")
+  (goto-char 360)
+  (assert (eq (get-char-property (point) 'face) 'py-variable-name-face) nil "missing-py-variable-name-face-lp-1215791-test #3 failed")
+
+  )
+
+(defun C-c-C-c-lp:1221310-and-store-result-test (&optional arg)
+  (interactive "p")
+   (let ((teststring "print(\"C-c-C-c-lp:1221310-and-store-result-test\")
+"))
+  (py-bug-tests-intern 'C-c-C-c-lp:1221310-and-store-result-base arg teststring)))
+
+(defun C-c-C-c-lp:1221310-and-store-result-base ()
+  (write-file (concat py-temp-directory "/lp-1221310.py"))
+  (assert (let ((py-store-result-p t))
+            (sit-for 0.1)
+            (string= "C-c-C-c-lp:1221310-and-store-result-test" (py-execute-base))) nil "C-c-C-c-lp:1221310-and-store-result-test failed"))
+
+(defun py-empty-line-closes-p-lp-1235324-test (&optional arg)
+  (interactive "p")
+   (let ((teststring "#! /usr/bin/env python
+if True:
+    if True:
+        print(\"This line is part of the inner statement\")
+
+    print(\"This line is NOT part of the inner statement\")
+\")
+"))
+  (py-bug-tests-intern 'py-empty-line-closes-p-lp-1235324-base arg teststring)))
+
+(defun py-empty-line-closes-p-lp-1235324-base ()
+  (goto-char (point-min))
+  (let (py-empty-line-closes-p)
+    (search-forward "print" nil t 2)
+    (assert (eq 8 (py-compute-indentation)) nil "py-empty-line-closes-p-lp-1235324-test #1 failed"))
+  (let ((py-empty-line-closes-p t))
+    (assert (eq 4 (py-compute-indentation)) nil "py-empty-line-closes-p-lp-1235324-test #2 failed")))
+
+(defun py-docstring-style-pep-257-nn-closing-quotes-lp-1241147-test (&optional arg)
+  (interactive "p")
+  (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+class Class(object):
+    \"\"\"A long long long long long long long long long long long
+long long long long long long long line.\"\"\"
+"))
+    (py-bug-tests-intern 'py-docstring-style-pep-257-nn-closing-quotes-lp-1241147-base arg teststring)))
+
+(defun py-docstring-style-pep-257-nn-closing-quotes-lp-1241147-base ()
+  (let ((py-docstring-style 'pep-257-nn))
+    (forward-line -1)
+    (fill-paragraph)
+    (sit-for 0.1)
+    (assert (search-forward "    \"\"\"") nil "py-docstring-style-pep-257-nn-closing-quotes-lp-1241147-test failed")))
+
+(defun indentation-after-parentized-assignment-lp-1243012-test (&optional arg)
+  (interactive "p")
+   (let ((teststring "#! /usr/bin/env python
+def main():
+    (a, b) = (1, 2)
+"))
+  (py-bug-tests-intern 'indentation-after-parentized-assignment-lp-1243012-base arg teststring)))
+
+(defun indentation-after-parentized-assignment-lp-1243012-base ()
+    (goto-char 40)
+    (assert nil "indentation-after-parentized-assignment-lp-1243012-test failed"))
+
+(defun py-execute-buffer-ipython-lp-1252643-test (&optional arg)
+  (interactive "p")
+   (let ((teststring "#! /usr/bin/env python
+print(1234)
+"))
+  (py-bug-tests-intern 'py-execute-buffer-ipython-lp-1252643-base arg teststring)))
+
+(defun py-execute-buffer-ipython-lp-1252643-base ()
+  (let ((py-switch-buffers-on-execute-p t))
+    (py-execute-buffer-ipython)
+    (sit-for 1)
+    (assert (string= "*Ipython*" (buffer-name (current-buffer))) nil "py-execute-buffer-ipython-lp-1252643-test failed")))
+
+
+(defun Execute-region_statement-runs-full-file-lp-1269855-test (&optional arg)
+  (interactive "p")
+   (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+def s (n):
+    sum=0
+    for i in range(1,n+1):
+         sum += i
+         #print i
+    return sum
+
+print s(10)
+print s(100)
+print s(500)
+"))
+  (py-bug-tests-intern 'Execute-region_statement-runs-full-file-lp-1269855-base arg teststring)))
+
+(defun Execute-region_statement-runs-full-file-lp-1269855-base ()
+  (py-execute-buffer)
+  (goto-char 149)
+  (py-execute-statement)
+  (assert nil "Execute-region_statement-runs-full-file-lp-1269855-test failed"))
+
+
+(defun abbrevs-changed-t-when-starting-lp-1270631-test (&optional arg)
+  (interactive "p")
+   (let ((teststring "#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"))
+  (py-bug-tests-intern 'abbrevs-changed-t-when-starting-lp-1270631-base arg teststring)))
+
+(defun abbrevs-changed-t-when-starting-lp-1270631-base ()
+  (assert (eq nil abbrevs-changed) nil "abbrevs-changed-t-when-starting-lp-1270631-test failed"))
 
 
 (provide 'py-bug-numbered-tests)
