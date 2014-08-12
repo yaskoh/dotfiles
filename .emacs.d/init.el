@@ -16,11 +16,12 @@
 
 ;;; ================================================
 ;;; Serverをスタートしておく
-;;; ※windowsではserverの所有者権限が必要な模様。
+;;; ※windowsではserverフォルダの所有者権限が必要な模様。
 ;;; ================================================
-(require 'server)
-(unless (server-running-p)
-  (server-start))
+(when (eq system-type 'windows-nt)
+  (require 'server)
+  (unless (server-running-p)
+    (server-start)))
 
 ;;; ================================================
 ;;; Macでのキーボード配置を変更
@@ -45,10 +46,15 @@
    (font-spec :family "TakaoExGothic"))
   )
 
+;;; ================================================
+;;; カラーテーマを設定
+;;; ================================================
+(add-to-list 'custom-theme-load-path "~/.emacs.d/elisp/themes/zenburn")
+(load-theme 'zenburn t)
 
-;; ================================================
-;; Key設定
-;; ================================================
+;;; ================================================
+;;; Key設定
+;;; ================================================
 (global-set-key "\C-h" 'delete-backward-char)
 (global-set-key "\C-j" 'newline)
 (global-set-key "\C-m" 'newline-and-indent)
@@ -84,6 +90,8 @@
       `((".*" ,(expand-file-name "~/.emacs.d/backups/") t)))
 ;; 行番号を表示させる
 (global-linum-mode t)
+;; 行ハイライト
+(global-hl-line-mode)
 ;; ビープ音を消す
 (setq visible-bell t)
 (setq ring-bell-function 'ignore)
@@ -218,8 +226,8 @@
 
 ;;; ================================================
 ;;; python-mode.el
-;;; 2013/1/13 追加
-;;; https://launchpad.net/python-mode
+;;; 2013/1/13 追加, 2014/8/4 修正(org-modeにあたりがあった)
+;;; https://launchpad.net/python-mode/
 ;;; ================================================
 (require 'python-mode)
 (setq py-load-pymacs-p t)
