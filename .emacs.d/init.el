@@ -451,3 +451,12 @@
 (add-hook 'flycheck-before-syntax-check-hook  #'csharp-set-flycheck-command)
 (add-hook 'find-file-hook #'global-flycheck-mode)
 
+
+;;; ================================================
+;;; visual-basic-mode
+;;; 2014/10/1
+;;; http://www.emacswiki.org/cgi-bin/wiki/visual-basic-mode.el
+;;; ================================================
+(autoload 'visual-basic-mode "visual-basic-mode" "Visual Basic mode." t)
+(setq auto-mode-alist (append '(("\\.\\(frm\\|bas\\|cls\\|vba\\)$" .
+                                visual-basic-mode)) auto-mode-alist))
