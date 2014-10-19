@@ -13,7 +13,8 @@
 
 !/.zshrc
 
+!/.tmux.conf
+
 !/site-lisp
 /site-lisp/*
 !/site-lisp/siteinit.l
-

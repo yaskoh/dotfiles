@@ -1,9 +1,6 @@
 @echo off
 cd %~dp0
 
-if exist winlink rmdir /s /q winlink
-if not exist winlink mkdir winlink
-
 rem ********************
 rem emacs
 rem ********************
@@ -15,7 +12,13 @@ rem ********************
 mklink %HOME%\.zshrc %~dp0\.zshrc
 
 rem ********************
+rem tmux
+rem ********************
+mklink %HOME%\.tmux.conf %~dp0\.tmux.conf
+
+rem ********************
 rem xyzzy
 rem ********************
-mklink winlink\siteinit.l %~dp0\site-lisp\siteinit.l
-
+rem if exist winlink rmdir /s /q winlink
+rem if not exist winlink mkdir winlink
+rem mklink winlink\siteinit.l %~dp0\site-lisp\siteinit.l
