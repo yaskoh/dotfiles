@@ -17,6 +17,11 @@ rem ********************
 mklink %HOME%\.tmux.conf %~dp0\.tmux.conf
 
 rem ********************
+rem vim
+rem ********************
+mklink %HOME%\.vimrc %~dp0\.vimrc
+
+rem ********************
 rem xyzzy
 rem ********************
 rem if exist winlink rmdir /s /q winlink

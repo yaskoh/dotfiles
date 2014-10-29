@@ -11,6 +11,8 @@
 !/.emacs.d/elisp
 /.emacs.d/elisp/bk/*
 
+!/.vimrc
+
 !/.zshrc
 
 !/.tmux.conf

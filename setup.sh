@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOT_FILES=( .emacs.d .zshrc .tmux.conf)
+DOT_FILES=( .zshrc .emacs.d .vimrc .tmux.conf)
 cwd=$(cd $(dirname $0); pwd)
 
 for file in ${DOT_FILES[@]}
