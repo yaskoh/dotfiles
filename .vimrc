@@ -3,24 +3,31 @@
 "--------------------------------------
 
 syntax on
+
+set nocompatible
 set cursorline
-
-highlight Normal ctermbg=black ctermfg=grey
-highlight StatusLine term=none cterm=none ctermfg=black ctermbg=grey
-highlight CursorLine term=none cterm=none ctermfg=none ctermbg=darkgray
-
 set backspace=start,eol,indent
-
-set mouse=a
+set mouse=
 set incsearch
+set number
+set whichwrap=b,s,[,],<,>,~
+set nohlsearch
+set laststatus=2
+set statusline=%F%r%h%=
+set ignorecase
+set wildmenu wildmode=list:full
+
+highlight Normal ctermfg=black
+highlight StatusLine ctermfg=grey ctermbg=black
+highlight CursorLine ctermfg=darkgray ctermbg=none cterm =none
+highlight matchParen ctermfg=none ctermbg=darkgray
+
 
 "--------------------------------------
 " NeoBundle
 "--------------------------------------
 
 if has('vim_starting')
-    set nocompatible
-"    filetype off
     set runtimepath+=~/.vim/bundle/neobundle.vim/
 endif
 
