@@ -17,9 +17,9 @@ set statusline=%F%r%h%=
 set ignorecase
 set wildmenu wildmode=list:full
 
-highlight Normal ctermfg=black
-highlight StatusLine ctermfg=grey ctermbg=black
-highlight CursorLine ctermfg=darkgray ctermbg=none cterm =none
+highlight Normal ctermfg=grey ctermbg=black
+highlight StatusLine term=none cterm=none ctermfg=black ctermbg=grey
+highlight CursorLine term=none cterm=none ctermfg=none ctermbg=darkgrey
 highlight matchParen ctermfg=none ctermbg=darkgray
 
 
