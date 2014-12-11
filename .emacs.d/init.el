@@ -460,3 +460,12 @@
 (autoload 'visual-basic-mode "visual-basic-mode" "Visual Basic mode." t)
 (setq auto-mode-alist (append '(("\\.\\(frm\\|bas\\|cls\\|vba\\)$" .
                                 visual-basic-mode)) auto-mode-alist))
+
+
+;;; ================================================
+;;; cobol-mode
+;;; 2014/12/11
+;;; http://www.emacswiki.org/cgi-bin/wiki/cobol-mode.el
+;;; ================================================
+(require 'cobol-mode)
+(autoload 'cobol-mode "cobol-mode" "Major mode for Tandem COBOL files." t nil)
