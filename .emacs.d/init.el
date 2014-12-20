@@ -27,9 +27,9 @@
 ;;; Macでのキーボード配置を変更
 ;;; ================================================
 (when (eq system-type 'darwin)
-  (setq mac-command-modifier 'meta)
-  (setq mac-option-modifier 'super))
-;  (setq mac-control-modifier 'control))
+  (setq mac-command-modifier 'control)
+  (setq mac-option-modifier 'super)
+  (setq mac-control-modifier 'meta))
 
 
 ;;; ================================================
