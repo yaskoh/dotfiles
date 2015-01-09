@@ -468,4 +468,6 @@
 ;;; http://www.emacswiki.org/cgi-bin/wiki/cobol-mode.el
 ;;; ================================================
 (require 'cobol-mode)
+(setq auto-mode-alist (append auto-mode-alist
+                              '(("\\.cob$" . cobol-mode))))
 (autoload 'cobol-mode "cobol-mode" "Major mode for Tandem COBOL files." t nil)
