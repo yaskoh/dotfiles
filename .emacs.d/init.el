@@ -448,9 +448,7 @@
 ;;; 2014/6/4
 ;;; ================================================
 (require 'flycheck)
-(add-hook 'flycheck-before-syntax-check-hook  #'csharp-set-flycheck-command)
-(add-hook 'find-file-hook #'global-flycheck-mode)
-
+(add-hook 'after-init-hook #'global-flycheck-mode)
 
 ;;; ================================================
 ;;; visual-basic-mode
@@ -471,3 +469,4 @@
 (setq auto-mode-alist (append auto-mode-alist
                               '(("\\.cob$" . cobol-mode))))
 (autoload 'cobol-mode "cobol-mode" "Major mode for Tandem COBOL files." t nil)
+
