@@ -478,3 +478,36 @@
                               '(("\\.cob$" . cobol-mode))))
 (autoload 'cobol-mode "cobol-mode" "Major mode for Tandem COBOL files." t nil)
 
+
+;;; ================================================
+;;; dired-hide-details-mode
+;;; 2016/04/19
+;;; ================================================
+(require 'dired)
+(define-key dired-mode-map (kbd "(") 'dired-hide-details-mode)
+
+;;; ================================================
+;;; wdired settings
+;;; 2016/04/18
+;;; ================================================
+(require 'wdired)
+(define-key dired-mode-map (kbd "f") 'wdired-change-to-wdired-mode)
+
+;;; ================================================
+;;; dired-toggle
+;;; 2016/04/19
+;;; https://github.com/fasheng/dired-toggle
+;;; ================================================
+(require 'dired-toggle)
+(global-set-key (kbd "\C-xd") 'dired-toggle)
+(define-key dired-toggle-mode-map (kbd "q") 'delete-window)
+
+;;; ================================================
+;;; slime
+;;; 2016/05/12
+;;; https://common-lisp.net/project/slime/
+;;; ================================================
+(require 'slime-autoloads)
+(when (eq system-type 'windows-nt)
+  (setq inferior-lisp-program "wx86cl64"))
+(setq slime-contribs '(slime-fancy))
