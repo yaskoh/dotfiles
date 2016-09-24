@@ -28,20 +28,23 @@ Linux*)
     ;;
 
 # Cygwin
-CYGWIN*)
+CYGWIN* | MSYS*)
     cd
     chcp.com 65001
     alias ls='ls --color=auto --show-control-chars'
     alias ll='ls -l'
     alias l='ls -CF'
+    alias vi='vim'
     PROMPT='%n[%~]%# '
     RPROMPT='%D %T'
     bindkey -e
 
-    export PATH="$HOME/.rbenv/bin:$PATH"
+    export PATH="$/usr/local/bin:HOME/.rbenv/bin:$PATH"
     eval "$(rbenv init -)"
 
-    export PATH="/usr/local/bin:$PATH"
+    #cygwin path settings about names with white spaces
+    #PATH=$(echo ${PATH} | sed -e "s/\s/\\\\\ /g")
+    #export PATH
     ;;
 
 esac
