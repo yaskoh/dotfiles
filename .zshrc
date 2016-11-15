@@ -10,10 +10,12 @@ Darwin*)
     bindkey -e
     
     # rbenv
-    export PATH=$HOME/.rbenv/bin:$PATH
+    export PATH=$HOME/.rbenv/bin:$HOME/.pyenv/shims:$PATH
     eval "$(rbenv init -)"
+
+    # MacPort
+    export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
     ;;
-    
 
 # Linux
 Linux*)

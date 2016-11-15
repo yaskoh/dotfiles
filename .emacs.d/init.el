@@ -47,6 +47,14 @@
   )
 
 ;;; ================================================
+;;; LaTeX設定(Mac)
+;;; 2016/11/14
+;;; ================================================
+(when (eq system-type 'darwin)
+  (setenv "PATH" (concat "/Library/TeX/texbin" ":" (getenv "PATH")))
+  (setq exec-path (append '("/Library/TeX/texbin") exec-path)))
+
+;;; ================================================
 ;;; Windowsでのフォント設定を変更
 ;;; 2016/4/15
 ;;; ================================================
@@ -510,4 +518,13 @@
 (require 'slime-autoloads)
 (when (eq system-type 'windows-nt)
   (setq inferior-lisp-program "wx86cl64"))
+(when (eq system-type 'darwin)
+  (setq inferior-lisp-program "/usr/local/bin/clisp"))
 (setq slime-contribs '(slime-fancy))
+
+;;; ================================================
+;;; px
+;;; 2016/11/14
+;;; https://github.com/emacsmirror/px
+;;; ================================================
+(require 'px)
