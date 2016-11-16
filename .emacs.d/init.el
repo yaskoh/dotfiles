@@ -1,6 +1,12 @@
-;;; ================================================
-;;; Load-Path
-;;; ================================================
+;;; init.el --- emacs run-command file.
+
+;;; Commentary:
+
+;;; Code:
+
+;; ================================================
+;; Load-Path
+;; ================================================
 ;; load pathを追加する関数を定義
 (defun add-to-load-path (&rest paths)
   (let (path)
@@ -14,28 +20,44 @@
 ;; 下記ディレクトリおよびサブディレクトリをサブディレクトリに追加
 (add-to-load-path "elisp")
 
-;;; ================================================
-;;; Serverをスタートしておく
-;;; ※windowsではserverフォルダの所有者権限が必要な模様。
-;;; ================================================
+;; ================================================
+;; Serverをスタートしておく
+;; ※windowsではserverフォルダの所有者権限が必要な模様。
+;; ================================================
 (when (eq system-type 'windows-nt)
   (require 'server)
   (unless (server-running-p)
     (server-start)))
 
-;;; ================================================
-;;; Macでのキーボード配置を変更
-;;; ================================================
+;; ================================================
+;; Windowsでのフォント設定を変更
+;; 2016/4/15
+;; ================================================
+(when (eq system-type 'windows-nt)
+  (custom-set-faces
+   '(default ((t (:family "Ricty Diminished" :foundry "outline" :slant normal :weight normal :height 115 :width normal))))))
+
+;; ================================================
+;; Windowsでのgrep/find利用のためパスを変更
+;; 2016/4/15
+;; ================================================
+(when (eq system-type 'windows-nt)
+  (setenv "PATH" (concat "C:\\msys64\\usr\\bin;" (getenv "PATH")))
+  (setq find-program "C:\\msys64\\usr\\bin\\find.exe"
+        grep-program "C:\\msys64\\usr\\bin\\grep.exe"))
+
+;; ================================================
+;; Macでのキーボード配置を変更
+;; ================================================
 (when (eq system-type 'darwin)
   (setq mac-command-modifier 'control)
   (setq mac-option-modifier 'super)
   (setq mac-control-modifier 'meta))
 
-
-;;; ================================================
-;;; Macでのフォント設定を変更
-;;; 2014/4/13
-;;; ================================================
+;; ================================================
+;; Macでのフォント設定を変更
+;; 2014/4/13
+;; ================================================
 (when (eq system-type 'darwin)
   ;English
   (set-face-attribute 'default nil
@@ -46,31 +68,27 @@
    (font-spec :family "TakaoExGothic"))
   )
 
-;;; ================================================
-;;; LaTeX設定(Mac)
-;;; 2016/11/14
-;;; ================================================
+;; ================================================
+;; LaTeX設定
+;; 2016/11/14
+;; ================================================
+(when (eq system-type 'windows-nt)
+  (setenv "PATH" (concat "C:\\texlive\\2016\\bin\\win32" ":" (getenv "PATH")))
+  (setq exec-path (append '("C:\\texlive\\2016\\bin\\win32") exec-path)))
+
 (when (eq system-type 'darwin)
   (setenv "PATH" (concat "/Library/TeX/texbin" ":" (getenv "PATH")))
   (setq exec-path (append '("/Library/TeX/texbin") exec-path)))
 
-;;; ================================================
-;;; Windowsでのフォント設定を変更
-;;; 2016/4/15
-;;; ================================================
-(when (eq system-type 'windows-nt)
-  (custom-set-faces
-   '(default ((t (:family "Ricty Diminished" :foundry "outline" :slant normal :weight normal :height 115 :width normal))))))
-
-;;; ================================================
-;;; カラーテーマを設定
-;;; ================================================
+;; ================================================
+;; カラーテーマを設定
+;; ================================================
 (add-to-list 'custom-theme-load-path "~/.emacs.d/elisp/themes/zenburn")
 (load-theme 'zenburn t)
 
-;;; ================================================
-;;; Key設定
-;;; ================================================
+;; ================================================
+;; Key設定
+;; ================================================
 (global-set-key "\C-h" 'delete-backward-char)
 (global-set-key "\C-j" 'newline)
 (global-set-key "\C-m" 'newline-and-indent)
@@ -86,9 +104,9 @@
 (global-set-key "\M-z" 'transpose-words)
 
 
-;;; ================================================
-;;; Settings
-;;; ================================================
+;; ================================================
+;; Settings
+;; ================================================
 ;; モードラインに列番号を表示
 (column-number-mode t)
 ;; タブを使わない
@@ -112,13 +130,13 @@
 (setq visible-bell t)
 (setq ring-bell-function 'ignore)
 
-;;; ================================================
-;;; Utilities
-;;; ================================================
+;; ================================================
+;; Utilities
+;; ================================================
 
-;;; ================================================
-;;; Gaucheの設定（コピペ）
-;;; ================================================
+;; ================================================
+;; Gaucheの設定（コピペ）
+;; ================================================
 ;; Gaucheのデフォルトエンコーディングに合わせます。
 ;; Gaucheのデフォルトエンコーディングがeuc-jpの時はutf-8をeuc-jpに
 ;; してください。
@@ -206,31 +224,28 @@
 (put 'guard 'scheme-indent-function 1)
 
 
-
-;;; ================================================
-;;; csharp-modeの設定
-;;; ================================================
+;; ================================================
+;; csharp-modeの設定
+;; ================================================
 ;; (require 'csharp-mode)
 (autoload 'csharp-mode "csharp-mode" "Major mode for editing C# code." t)
 (setq auto-mode-alist
       (append '(("\\.cs$" . csharp-mode)) auto-mode-alist))
 
 
-
-;;; ================================================
-;;; html-helper-mode
-;;; 2013/1/3 追加
-;;; ================================================
+;; ================================================
+;; html-helper-mode
+;; 2013/1/3 追加
+;; ================================================
 ;(autoload 'html-helper-mode "html-helper-mode" "Yay HTML" t)
 ;(setq auto-mode-alist (cons '("\\.html$" . html-helper-mode) auto-mode-alist))
 ;(setq auto-mode-alist (cons '("\\.asp$" . html-helper-mode) auto-mode-alist))
 ;(setq auto-mode-alist (cons '("\\.phtml$" . html-helper-mode) auto-mode-alist))
 
 
-
-;;; ================================================
-;;; web-mode
-;;; ================================================
+;; ================================================
+;; web-mode
+;; ================================================
 (require 'web-mode)
 (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
@@ -240,29 +255,29 @@
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 
 
-;;; ================================================
-;;; python-mode.el
-;;; 2013/1/13 追加, 2014/8/4 修正(org-modeにあたりがあった)
-;;; https://launchpad.net/python-mode/
-;;; ================================================
+;; ================================================
+;; python-mode.el
+;; 2013/1/13 追加, 2014/8/4 修正(org-modeにあたりがあった)
+;; https://launchpad.net/python-mode/
+;; ================================================
 (require 'python-mode)
 (setq py-load-pymacs-p t)
 
 
-;;; ================================================
-;;; tabbar.el
-;;; 2014/1/16 追加
-;;; http://www.emacswiki.org/emacs/download/tabbar.el
-;;; ================================================
+;; ================================================
+;; tabbar.el
+;; 2014/1/16 追加
+;; http://www.emacswiki.org/emacs/download/tabbar.el
+;; ================================================
 (require 'tabbar)
 (tabbar-mode 1)
 
 
-;;; ================================================
-;;; evil.el
-;;; 2014/1/16 追加
-;;; http://www.emacswiki.org/emacs/download/tabbar.el
-;;; ================================================
+;; ================================================
+;; evil.el
+;; 2014/1/16 追加
+;; http://www.emacswiki.org/emacs/download/tabbar.el
+;; ================================================
 (require 'evil)
 (evil-mode 1)
 
@@ -270,27 +285,27 @@
 (define-key evil-insert-state-map [escape] 'evil-normal-state)
 
 
-;;; ================================================
-;;; evil-mode-line.el
-;;; 2014/1/17 追加
-;;; https://raw.github.com/tarao/evil-plugins/master/evil-mode-line.el
-;;; (mode-line-colorも追加)
-;;; ================================================
+;; ================================================
+;; evil-mode-line.el
+;; 2014/1/17 追加
+;; https://raw.github.com/tarao/evil-plugins/master/evil-mode-line.el
+;; (mode-line-colorも追加)
+;; ================================================
 (require 'evil-mode-line)
 
 
-;;; ================================================
-;;; cua-mode（矩形編集）の使用
-;;; ================================================
+;; ================================================
+;; cua-mode（矩形編集）の使用
+;; ================================================
 (cua-mode t)
 (setq cua-enable-cua-keys nil)
 
 
-;;; ================================================
-;;; sql-mode
-;;; 2014/1/20
-;;; http://www.emacswiki.org/cgi-bin/wiki?SqlMode
-;;; ================================================
+;; ================================================
+;; sql-mode
+;; 2014/1/20
+;; http://www.emacswiki.org/cgi-bin/wiki?SqlMode
+;; ================================================
 ;; C-c C-c : 'sql-send-paragraph
 ;; C-c C-r : 'sql-send-region
 ;; C-c C-s : 'sql-send-string
@@ -368,38 +383,38 @@
   (sql-product-interactive 'ms))
 
 
-;;; ================================================
-;;; yasnippet
-;;; 2014/3/21
-;;; https://github.com/capitaomorte/yasnippet
-;;; ================================================
+;; ================================================
+;; yasnippet
+;; 2014/3/21
+;; https://github.com/capitaomorte/yasnippet
+;; ================================================
 (require 'yasnippet)
 (yas-global-mode 1)
 
 
-;;; ================================================
-;;; emacs-flymake
-;;; 2014/3/21
-;;; https://github.com/illusori/emacs-flymake
-;;; ================================================
+;; ================================================
+;; emacs-flymake
+;; 2014/3/21
+;; https://github.com/illusori/emacs-flymake
+;; ================================================
 (require 'flymake)
 
 
-;;; ================================================
-;;; auto-complete
-;;; 2014/3/23
-;;; https://github.com/auto-complete/auto-complete/
-;;; ================================================
+;; ================================================
+;; auto-complete
+;; 2014/3/23
+;; https://github.com/auto-complete/auto-complete/
+;; ================================================
 (require 'auto-complete-config)
 (ac-config-default)
 (auto-complete-mode 1)
 
 
-;;; ================================================
-;;; helm
-;;; 2014/3/21
-;;; https://github.com/emacs-helm/helm
-;;; ================================================
+;; ================================================
+;; helm
+;; 2014/3/21
+;; https://github.com/emacs-helm/helm
+;; ================================================
 (require 'helm-config)
 (helm-mode 1)
 ;; キーバインド
@@ -410,22 +425,22 @@
 (define-key helm-read-file-map (kbd "<tab>") 'helm-execute-persistent-action)
 
 
-;;; ================================================
-;;; emmet
-;;; 2014/3/21
-;;; https://github.com/smihica/emmet-mode
-;;; ================================================
+;; ================================================
+;; emmet
+;; 2014/3/21
+;; https://github.com/smihica/emmet-mode
+;; ================================================
 (require 'emmet-mode)
 (add-hook 'web-mode-hook 'emmet-mode)
 (add-hook 'css-mode-hook 'emmet-mode)
 (add-hook 'emmet-mode-hook (lambda () (setq emmet-indentation 2)))
 
 
-;;; ================================================
-;;; jaspace
-;;; 2014/3/29
-;;; http://homepage3.nifty.com/satomii/software/elisp.ja.html
-;;; ================================================
+;; ================================================
+;; jaspace
+;; 2014/3/29
+;; http://homepage3.nifty.com/satomii/software/elisp.ja.html
+;; ================================================
 (require 'jaspace)
 ;改行
 (setq jaspace-alternate-eol-string "\xab\n")
@@ -437,20 +452,20 @@
 (jaspace-mode-on)
 
 
-;;; ================================================
-;;; dos-mode
-;;; 2014/3/29
-;;; http://www.emacswiki.org/emacs/dos.el
-;;; ================================================
+;; ================================================
+;; dos-mode
+;; 2014/3/29
+;; http://www.emacswiki.org/emacs/dos.el
+;; ================================================
 (require 'dos)
 (setq auto-mode-alist
       (append '(("\\.bat$" . dos-mode)) auto-mode-alist))
 
-;;; ================================================
-;;; org-mode
-;;; 2014/4/6
-;;; http://orgmode.org/ja/
-;;; ================================================
+;; ================================================
+;; org-mode
+;; 2014/4/6
+;; http://orgmode.org/ja/
+;; ================================================
 ;(require 'org)
 ;(require 'org-install)
 (global-set-key "\C-cl" 'org-store-link)
@@ -459,62 +474,62 @@
 (global-set-key "\C-cb" 'org-iswitchb)
 
 
-;;; ================================================
-;;; flycheck
-;;; 2014/6/4
-;;; ================================================
+;; ================================================
+;; flycheck
+;; 2014/6/4
+;; ================================================
 (require 'flycheck)
 (add-hook 'after-init-hook #'global-flycheck-mode)
 
-;;; ================================================
-;;; visual-basic-mode
-;;; 2014/10/1
-;;; http://www.emacswiki.org/cgi-bin/wiki/visual-basic-mode.el
-;;; ================================================
+;; ================================================
+;; visual-basic-mode
+;; 2014/10/1
+;; http://www.emacswiki.org/cgi-bin/wiki/visual-basic-mode.el
+;; ================================================
 (autoload 'visual-basic-mode "visual-basic-mode" "Visual Basic mode." t)
 (setq auto-mode-alist (append '(("\\.\\(frm\\|bas\\|cls\\|vba\\)$" .
                                 visual-basic-mode)) auto-mode-alist))
 
 
-;;; ================================================
-;;; cobol-mode
-;;; 2014/12/11
-;;; http://www.emacswiki.org/cgi-bin/wiki/cobol-mode.el
-;;; ================================================
+;; ================================================
+;; cobol-mode
+;; 2014/12/11
+;; http://www.emacswiki.org/cgi-bin/wiki/cobol-mode.el
+;; ================================================
 (require 'cobol-mode)
 (setq auto-mode-alist (append auto-mode-alist
                               '(("\\.cob$" . cobol-mode))))
 (autoload 'cobol-mode "cobol-mode" "Major mode for Tandem COBOL files." t nil)
 
 
-;;; ================================================
-;;; dired-hide-details-mode
-;;; 2016/04/19
-;;; ================================================
+;; ================================================
+;; dired-hide-details-mode
+;; 2016/04/19
+;; ================================================
 (require 'dired)
 (define-key dired-mode-map (kbd "(") 'dired-hide-details-mode)
 
-;;; ================================================
-;;; wdired settings
-;;; 2016/04/18
-;;; ================================================
+;; ================================================
+;; wdired settings
+;; 2016/04/18
+;; ================================================
 (require 'wdired)
 (define-key dired-mode-map (kbd "f") 'wdired-change-to-wdired-mode)
 
-;;; ================================================
-;;; dired-toggle
-;;; 2016/04/19
-;;; https://github.com/fasheng/dired-toggle
-;;; ================================================
+;; ================================================
+;; dired-toggle
+;; 2016/04/19
+;; https://github.com/fasheng/dired-toggle
+;; ================================================
 (require 'dired-toggle)
 (global-set-key (kbd "\C-xd") 'dired-toggle)
 (define-key dired-toggle-mode-map (kbd "q") 'delete-window)
 
-;;; ================================================
-;;; slime
-;;; 2016/05/12
-;;; https://common-lisp.net/project/slime/
-;;; ================================================
+;; ================================================
+;; slime
+;; 2016/05/12
+;; https://common-lisp.net/project/slime/
+;; ================================================
 (require 'slime-autoloads)
 (when (eq system-type 'windows-nt)
   (setq inferior-lisp-program "wx86cl64"))
@@ -522,9 +537,12 @@
   (setq inferior-lisp-program "/usr/local/bin/clisp"))
 (setq slime-contribs '(slime-fancy))
 
-;;; ================================================
-;;; px
-;;; 2016/11/14
-;;; https://github.com/emacsmirror/px
-;;; ================================================
+;; ================================================
+;; px
+;; 2016/11/14
+;; https://github.com/emacsmirror/px
+;; ================================================
 (require 'px)
+
+
+;;; init.el ends here
