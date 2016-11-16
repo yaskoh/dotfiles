@@ -89,6 +89,8 @@
 ;; ================================================
 ;; Key設定
 ;; ================================================
+(global-set-key "\C-c\C-c" 'px-toggle)
+(global-set-key "\C-c\C-xl" 'px-preview)
 (global-set-key "\C-h" 'delete-backward-char)
 (global-set-key "\C-j" 'newline)
 (global-set-key "\C-m" 'newline-and-indent)
