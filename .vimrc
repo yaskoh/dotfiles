@@ -25,6 +25,12 @@ set softtabstop=2
 set autoindent
 set smartindent
 
+" key
+cnoremap <C-l> <C-c>
+inoremap <C-l> <C-c>
+vnoremap <C-l> <C-c>
+
+" highlight
 highlight Normal ctermfg=grey ctermbg=black
 highlight StatusLine term=none cterm=none ctermfg=black ctermbg=grey
 highlight CursorLine term=none cterm=none ctermfg=none ctermbg=darkgrey
