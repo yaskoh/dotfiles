@@ -12,6 +12,11 @@ rem ********************
 mklink %HOME%\.zshrc %~dp0\.zshrc
 
 rem ********************
+rem bash
+rem ********************
+mklink %HOME%\.bashrc %~dp0\.bashrc
+
+rem ********************
 rem tmux
 rem ********************
 mklink %HOME%\.tmux.conf %~dp0\.tmux.conf
