@@ -56,6 +56,8 @@ Darwin*)
 
 # Linux
 Linux*)
+    #keymap
+    setxkbmap dvorak
     # alias
     alias ls='ls -F --color=tty'
     alias ll='ls -l'
