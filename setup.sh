@@ -13,6 +13,20 @@ do
   fi
 done
 
+# git setting
+echo "present git config :"
+git config --global -l
+echo " "
+echo "type git user name : "
+read n
+if [ "${n}" != "" ]; then git config --global user.name "${n}"; fi
+echo "type git user email : "
+read e
+if [ "${e}" != "" ]; then git config --global user.email "${e}"; fi
+echo " "
+echo "present git config :"
+git config --global -l
+
 # pyenv
 git clone https://github.com/yyuu/pyenv.git ~/.pyenv
 
