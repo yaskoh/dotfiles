@@ -38,8 +38,13 @@ alias rm='rm -i'
 alias vi='vim'
 alias mkdir='mkdir -p'
 
+# alias (local)
+alias ga='gitall'
+alias gaa='gitall addlist'
+
 # path
 export PATH=${HOME}/bin:$PATH
+
 
 ## For each OS ##
 case `uname -s` in
