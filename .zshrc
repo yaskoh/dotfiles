@@ -38,6 +38,8 @@ alias rm='rm -i'
 alias vi='vim'
 alias mkdir='mkdir -p'
 
+# path
+export PATH=${HOME}/bin:$PATH
 
 ## For each OS ##
 case `uname -s` in
