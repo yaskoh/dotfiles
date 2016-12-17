@@ -51,6 +51,9 @@ case `uname -s` in
 
 # Mac
 Darwin*)
+    # tmux
+    [[ -z "${TMUX}" && ! -z "PS1" ]] && tmux
+    # alias
     alias ls='ls -FG'
     alias ll='ls -l'
     alias la='ls -a'
