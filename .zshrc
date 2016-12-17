@@ -53,6 +53,8 @@ case `uname -s` in
 Darwin*)
     alias ls='ls -FG'
     alias ll='ls -l'
+    alias la='ls -a'
+    alias l='ls -C'
     alias emacs='open -a /Applications/Emacs.app/Contents/MacOS/Emacs'
     # rbenv
     export PATH=${HOME}/.rbenv/bin:${HOME}/.pyenv/shims:${PATH}
