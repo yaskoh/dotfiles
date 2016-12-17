@@ -31,6 +31,7 @@ echo "type git user email : "
 read e
 if [ "${e}" != "" ]; then git config --global user.email "${e}"; fi
 echo " "
+git config core.filemode false  # ignore mode difference
 echo "present git config :"
 git config --global -l
 echo " "
