@@ -1,19 +1,26 @@
 #!/bin/bash
 
+# variables
 DOT_FILES=( .zshrc .emacs.d .vimrc .tmux.conf .bashrc)
-cwd=$(cd $(dirname $0); pwd)
 
+# make symbolic link
+cwd=$(cd $(dirname $0); pwd)
 for file in ${DOT_FILES[@]}
 do
-  if [ -a $HOME/$file ]; then
-    echo "exist : $file"
+  if [ -h ${HOME}/${file} ]; then
+    rm -f ${HOME}/${file}
+    ln -s ${cwd}/${file} ${HOME}/${file}
+    echo "replace symbolic link: ${file}"
+  elif [ -e ${HOME}/${file} ]; then
+    echo "exist : ${file}"
   else
-    ln -s $cwd/$file $HOME/$file
-    echo "create symbolic link: $file"
+    ln -s ${cwd}/${file} ${HOME}/${file}
+    echo "create symbolic link: ${file}"
   fi
 done
 
 # git setting
+echo " "
 echo "present git config :"
 git config --global -l
 echo " "
@@ -26,6 +33,7 @@ if [ "${e}" != "" ]; then git config --global user.email "${e}"; fi
 echo " "
 echo "present git config :"
 git config --global -l
+echo " "
 
 # pyenv
 git clone https://github.com/yyuu/pyenv.git ~/.pyenv
