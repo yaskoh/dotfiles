@@ -5,39 +5,38 @@
 
 (emmet-defparameter *emmet-test-cases* nil)
 
+(defun emmet-run-test-case (name fn cases)
+  (let ((res (loop for c in cases
+                    for i to (1- (length cases)) do
+                    (let ((expected (cdr c))
+                          (actual (funcall fn (car c))))
+                      (when (not (equal expected actual))
+                        (princ
+                         (concat "*** [FAIL] | \"" name "\" " (number-to-string i) "\n\n"
+                                 (format "%s" (car c)) "\t=>\n\n"
+                                 "Expected\n" (format "%s" expected) "\n\nActual\n" (format "%s" actual) "\n\n"))
+                        (return 'fail))))))
+    (if (not (eql res 'fail))
+        (princ (concat "    [PASS] | \"" name "\" "
+                       (number-to-string (length cases)) " tests.\n")))))
+
 (defun emmet-test-cases (&rest args)
   (let ((cmd (car args)))
-    (flet
-        ((run-cases
-          (fn cases)
-          (loop for c in cases
-                for i to (1- (length cases)) do
-                (let ((expected (cdr c))
-                      (actual (funcall fn (car c))))
-                  (when (not (equal expected actual))
-                    (princ
-                     (concat "*** [FAIL] | \"" name "\" " (number-to-string i) "\n\n"
-                             (format "%s" (car c)) "\t=>\n\n"
-                             "Expected\n" (format "%s" expected) "\n\nActual\n" (format "%s" actual) "\n\n"))
-                    (return 'fail))))))
-      (cond ((eql cmd 'assign)
-             (let ((name (cadr args))
-                   (fn   (caddr args))
-                   (defs (cadddr args)))
-               (let ((place (assoc name *emmet-test-cases*)))
-                 (if place
-                     (setf (cdr place) (cons fn defs))
-                   (setq *emmet-test-cases*
-                         (cons (cons name (cons fn defs)) *emmet-test-cases*))))))
-            (t
-             (loop for test in (reverse *emmet-test-cases*) do
-                   (let ((name  (symbol-name (car test)))
-                         (fn    (cadr test))
-                         (cases (cddr test)))
-                     (let ((res (run-cases fn cases)))
-                       (if (not (eql res 'fail))
-                           (princ (concat "    [PASS] | \"" name "\" "
-                                          (number-to-string (length cases)) " tests.\n")))))))))))
+    (cond ((eql cmd 'assign)
+           (let ((name (cadr args))
+                 (fn   (caddr args))
+                 (defs (cadddr args)))
+             (let ((place (assoc name *emmet-test-cases*)))
+               (if place
+                   (setf (cdr place) (cons fn defs))
+                 (setq *emmet-test-cases*
+                       (cons (cons name (cons fn defs)) *emmet-test-cases*))))))
+          (t
+           (loop for test in (reverse *emmet-test-cases*) do
+                 (let ((name  (symbol-name (car test)))
+                       (fn    (cadr test))
+                       (cases (cddr test)))
+                   (emmet-run-test-case name fn cases)))))))
 
 (defmacro define-emmet-transform-test-case (name fn &rest tests)
   `(emmet-test-cases 'assign ',name
@@ -51,6 +50,12 @@
   `(define-emmet-transform-test-case ,name
      'emmet-html-transform
      ,@tests))
+
+(defmacro define-emmet-unit-test-case (name fn &rest tests)
+  `(emmet-test-cases 'assign ',name
+                         ,fn
+                         ',(loop for x on tests by #'cddr collect
+                                 (cons (car x) (cadr x)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; XML-abbrev tests
@@ -72,9 +77,9 @@
   "a/#q.x.y.z"             ("<a id=\"q\" class=\"x y z\" href=\"\"/>"))
 
 (define-emmet-transform-html-test-case Self-closing-tags
-  "input type=text"        ("<input type=\"text\" name=\"\" value=\"\"/>")
-  "img"                    ("<img src=\"\" alt=\"\"/>")
-  "img>metadata/*2"        ("<img src=\"\" alt=\"\">"
+  "input type=text"        ("<input name=\"\" type=\"text\" value=\"\"/>")
+  "img"                    ("<img alt=\"\" src=\"\"/>")
+  "img>metadata/*2"        ("<img alt=\"\" src=\"\">"
                             "    <metadata/>"
                             "    <metadata/>"
                             "</img>"))
@@ -113,7 +118,7 @@
                             "<ol>"
                             "    <li></li>"
                             "</ol>")
-  "ul#q.x.y m=l+"          ("<ul id=\"q\" class=\"x y\" m=\"l\">"
+  "ul#q.x.y[m=l]+"          ("<ul id=\"q\" class=\"x y\" m=\"l\">"
                             "    <li></li>"
                             "</ul>"))
 
@@ -124,7 +129,9 @@
   "a#q.x>b"                ("<a id=\"q\" class=\"x\" href=\"\"><b></b></a>")
   "a#q.x.y.z>b"            ("<a id=\"q\" class=\"x y z\" href=\"\"><b></b></a>")
   "a#q.x.y.z>b#p.l.m.n"    ("<a id=\"q\" class=\"x y z\" href=\"\"><b id=\"p\" class=\"l m n\"></b></a>")
-  "#q>.x"                  ("<div id=\"q\"><div class=\"x\"></div></div>")
+  "#q>.x"                  ("<div id=\"q\">"
+                            "    <div class=\"x\"></div>"
+                            "</div>")
   "a>b+c"                  ("<a href=\"\">"
                             "    <b></b>"
                             "    <c></c>"
@@ -169,9 +176,7 @@
    "        <span></span>"
    "        <em></em>"
    "    </p>"
-   "    <blockquote>"
-   "        foo"
-   "    </blockquote>"
+   "    <blockquote>foo</blockquote>"
    "</div>"))
 
 (define-emmet-transform-html-test-case Multiplication
@@ -262,30 +267,37 @@
    "    <li class=\"item1\">name: item1 price: 1$</li>"
    "    <li class=\"item2\">name: item2 price: 2$</li>"
    "    <li class=\"item3\">name: item3 price: 3$</li>"
+   "</ul>")
+
+  "ul>li[id=\"thing-$\"]*3"
+  ("<ul>"
+   "    <li id=\"thing-1\"></li>"
+   "    <li id=\"thing-2\"></li>"
+   "    <li id=\"thing-3\"></li>"
    "</ul>"))
 
 (define-emmet-transform-html-test-case Properties
-  "a x"                    ("<a href=\"\" x=\"\"></a>")
-  "a x="                   ("<a href=\"\" x=\"\"></a>")
-  "a x=\"\""               ("<a href=\"\" x=\"\"></a>")
-  "a x=y"                  ("<a href=\"\" x=\"y\"></a>")
-  "a x=\"y\""              ("<a href=\"\" x=\"y\"></a>")
-  "a x=\"()\""             ("<a href=\"\" x=\"()\"></a>")
-  "a x m"                  ("<a href=\"\" x=\"\" m=\"\"></a>")
-  "a x= m=\"\""            ("<a href=\"\" x=\"\" m=\"\"></a>")
-  "a x=y m=l"              ("<a href=\"\" x=\"y\" m=\"l\"></a>")
-  "a/ x=y m=l"             ("<a href=\"\" x=\"y\" m=\"l\"/>")
-  "a#foo x=y m=l"          ("<a id=\"foo\" href=\"\" x=\"y\" m=\"l\"></a>")
-  "a.foo x=y m=l"          ("<a class=\"foo\" href=\"\" x=\"y\" m=\"l\"></a>")
-  "a#foo.bar.mu x=y m=l"   ("<a id=\"foo\" class=\"bar mu\" href=\"\" x=\"y\" m=\"l\"></a>")
-  "a/#foo.bar.mu x=y m=l"  ("<a id=\"foo\" class=\"bar mu\" href=\"\" x=\"y\" m=\"l\"/>")
-  "a x=y+b"                ("<a href=\"\" x=\"y\"></a>"
+  "a[x]"                    ("<a href=\"\" x=\"\"></a>")
+  "a[x=]"                   ("<a href=\"\" x=\"\"></a>")
+  "a[x=\"\"]"               ("<a href=\"\" x=\"\"></a>")
+  "a[x=y]"                  ("<a href=\"\" x=\"y\"></a>")
+  "a[x=\"y\"]"              ("<a href=\"\" x=\"y\"></a>")
+  "a[x=\"()\"]"             ("<a href=\"\" x=\"()\"></a>")
+  "a[x m]"                  ("<a href=\"\" x=\"\" m=\"\"></a>")
+  "a[x= m=\"\"]"            ("<a href=\"\" x=\"\" m=\"\"></a>")
+  "a[x=y m=l]"              ("<a href=\"\" x=\"y\" m=\"l\"></a>")
+  "a/[x=y m=l]"             ("<a href=\"\" x=\"y\" m=\"l\"/>")
+  "a#foo[x=y m=l]"          ("<a id=\"foo\" href=\"\" x=\"y\" m=\"l\"></a>")
+  "a.foo[x=y m=l]"          ("<a class=\"foo\" href=\"\" x=\"y\" m=\"l\"></a>")
+  "a#foo.bar.mu[x=y m=l]"   ("<a id=\"foo\" class=\"bar mu\" href=\"\" x=\"y\" m=\"l\"></a>")
+  "a/#foo.bar.mu[x=y m=l]"  ("<a id=\"foo\" class=\"bar mu\" href=\"\" x=\"y\" m=\"l\"/>")
+  "a[x=y]+b"                ("<a href=\"\" x=\"y\"></a>"
                             "<b></b>")
-  "a x=y+b x=y"            ("<a href=\"\" x=\"y\"></a>"
+  "a[x=y]+b[x=y]"            ("<a href=\"\" x=\"y\"></a>"
                             "<b x=\"y\"></b>")
-  "a x=y>b"                ("<a href=\"\" x=\"y\"><b></b></a>")
-  "a x=y>b x=y"            ("<a href=\"\" x=\"y\"><b x=\"y\"></b></a>")
-  "a x=y>b x=y+c x=y"      ("<a href=\"\" x=\"y\">"
+  "a[x=y]>b"                ("<a href=\"\" x=\"y\"><b></b></a>")
+  "a[x=y]>b[x=y]"            ("<a href=\"\" x=\"y\"><b x=\"y\"></b></a>")
+  "a[x=y]>b[x=y]+c[x=y]"      ("<a href=\"\" x=\"y\">"
                             "    <b x=\"y\"></b>"
                             "    <c x=\"y\"></c>"
                             "</a>"))
@@ -341,9 +353,47 @@
    "<a href=\"\">here</a>"
    " to continue")
 
-  "xxx#id.cls p=1{txt}"
+  "xxx#id.cls[p=1]{txt}"
   ("<xxx id=\"id\" class=\"cls\" p=\"1\">txt</xxx>"))
 
+(define-emmet-unit-test-case Lorem-ipsum
+  #'emmet-expr
+  "lorem"
+  ((filter ("html") (text (lorem 30))) . "")
+
+  "ipsum"
+  ((filter ("html") (text (lorem 30))) . "")
+
+  "p*3>lorem10"
+  ((filter
+    ("html")
+    (list ((parent-child (tag ("p" t nil nil nil nil)) (text (lorem 10)))
+           (parent-child (tag ("p" t nil nil nil nil)) (text (lorem 10)))
+           (parent-child (tag ("p" t nil nil nil nil)) (text (lorem 10)))))) . "")
+
+  "ul.generic-list>ipsum3*3"
+  ((filter
+    ("html")
+    (parent-child
+     (tag ("ul" t nil ("generic-list") nil nil))
+     (list ((text (lorem 3))
+            (text (lorem 3))
+            (text (lorem 3)))))) . "")
+
+  "ul.generic-list>(li>lorem1000)*3"
+  ((filter
+    ("html")
+    (parent-child
+     (tag ("ul" t nil ("generic-list") nil nil))
+     (list ((parent-child
+             (tag ("li" t nil nil nil nil))
+             (text (lorem 1000)))
+            (parent-child
+             (tag ("li" t nil nil nil nil))
+             (text (lorem 1000)))
+            (parent-child
+             (tag ("li" t nil nil nil nil))
+             (text (lorem 1000))))))) . ""))
 
 (define-emmet-transform-html-test-case Filter-comment
   "a.b|c"                  ("<!-- .b -->"
@@ -360,12 +410,12 @@
 (define-emmet-transform-html-test-case Filter-HAML
   "a|haml"                 ("%a")
   "a#q.x.y.z|haml"         ("%a#q.x.y.z")
-  "a#q.x x=y m=l|haml"     ("%a#q.x{:x => \"y\", :m => \"l\"}")
+  "a#q.x[x=y m=l]|haml"     ("%a#q.x{:x => \"y\", :m => \"l\"}")
   "div|haml"               ("%div")
   "div.footer|haml"        (".footer")
   ".footer|haml"           (".footer")
 
-  "p>{This is haml}*2+a href=#+br|haml"
+  "p>{This is haml}*2+a[href=#]+br|haml"
   ("%p"
    "    This is haml"
    "    This is haml"
@@ -375,9 +425,9 @@
 (define-emmet-transform-html-test-case Filter-Hiccup
   "a|hic"                  ("[:a]")
   "a#q.x.y.z|hic"          ("[:a#q.x.y.z]")
-  "a#q.x x=y m=l|hic"      ("[:a#q.x {:x \"y\", :m \"l\"}]")
+  "a#q.x[x=y m=l]|hic"      ("[:a#q.x {:x \"y\", :m \"l\"}]")
   ".footer|hic"            ("[:div.footer]")
-  "p>a href=#+br|hic"      ("[:p"
+  "p>a[href=#]+br|hic"      ("[:p"
                             "    [:a {:href \"#\"}]"
                             "    [:br]]")
 
@@ -390,17 +440,10 @@
    "        [:b]]]"))
 
 (define-emmet-transform-html-test-case Filter-escape
-  "script src=&quot;|e"    ("&lt;script src=\"&amp;quot;\"&gt;"
-                            "&lt;/script&gt;"))
+  "script[src=&quot;]|e"    ("&lt;script src=\"&amp;quot;\"&gt;&lt;/script&gt;"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CSS-abbrev tests
-
-(defmacro define-emmet-unit-test-case (name fn &rest tests)
-  `(emmet-test-cases 'assign ',name
-                         ,fn
-                         ',(loop for x on tests by #'cddr collect
-                                 (cons (car x) (cadr x)))))
 
 (define-emmet-unit-test-case CSS-toknize
   #'emmet-css-toknize
@@ -525,6 +568,172 @@
   "@i http://github.com/smihica/index.css"
                            ("@import url(http://github.com/smihica/index.css);")
   )
+
+;; lorem generator test
+(let ((name "Lorem-generator"))
+  (princ
+   (if (or (not (string-equal (emmet-lorem-generate 0) ""))
+           (not (= (length (split-string (emmet-lorem-generate 1) " ")) 1))
+           (not (= (length (split-string (emmet-lorem-generate 22) " ")) 22))
+           (not (= (length (split-string (emmet-lorem-generate 99) " ")) 99))
+           (not (= (length (split-string (emmet-lorem-generate 1000) " ")) 1000)))
+       (concat "*** [FAIL] | \"" name "\".\n")
+     (concat "    [PASS] | \"" name "\" 5 tests.\n"))))
+
+;; Inline tag expansion within HTML/XML markup (regression test)
+(defun emmet-inline-expansion-test (lis)
+  "Tests inline expansion of emmet forms nested inside markup."
+  (let ((es (car lis))
+        (emmet-preview-default nil)
+        (emmet-indent-after-insert t))
+    (with-temp-buffer
+      (emmet-mode 1)
+      (insert "<div></div>")
+      (backward-char 6)
+      (insert es)
+      (emmet-expand-line nil)
+      (buffer-string))))
+
+(emmet-run-test-case "Inline Expansion"
+  #'emmet-inline-expansion-test
+  '((("span#test") . "<div><span id=\"test\"></span></div>")))
+
+;; indent
+;; NOTE: Indent uses indent-region by default,
+;;   and inserts spaces based on emmet-indentation
+;;   if emmet-indent-after-insert is nil
+(defun emmet-indent-test (lis)
+  (let ((es (car lis))
+        (emmet-preview-default nil)
+        (indent-tabs-mode nil)
+        (tab-width 2)
+        (standard-indent 2))
+    (with-temp-buffer
+      (emmet-mode 1)
+      (sgml-mode)
+      (insert es)
+      (emmet-expand-line nil)
+      (buffer-string))))
+
+(let ((emmet-indent-after-insert t))
+  (emmet-run-test-case "Indentation via indent-region"
+    #'emmet-indent-test
+    '((("div>ul>li*3") . "<div>\n  <ul>\n    <li></li>\n    <li></li>\n    <li></li>\n  </ul>\n</div>"))))
+
+(let ((emmet-indent-after-insert nil)
+      (emmet-indentation 2))
+  (emmet-run-test-case "Indentation via emmet-indentation"
+    #'emmet-indent-test
+    '((("div>ul>li*3") . "<div>\n  <ul>\n    <li></li>\n    <li></li>\n    <li></li>\n  </ul>\n</div>"))))
+
+;; Old tests for previous indent behavior last seen:
+;;   commit: f56174e5905a40583b47f9737abee3af8da3faeb
+
+(defun emmet-wrap-with-markup-test (lis)
+  (let ((es (car lis))
+        (ins (or (elt lis 1) "This is gnarly text with $$$s and <span>markup</span> and end brackets}}s"))
+        (indent-tabs-mode nil)
+        (tab-width 2)
+        (standard-indent 2))
+    (with-temp-buffer
+      (emmet-mode 1)
+      (sgml-mode)
+      (set-mark (point))
+      (insert ins)
+      (emmet-wrap-with-markup es)
+      (buffer-string))))
+
+(emmet-run-test-case "Wrap with markup on text with brackets and markup"
+  #'emmet-wrap-with-markup-test
+  '((("div>ul>li") . "<div>\n  <ul>\n    <li>This is gnarly text with $$$s and <span>markup</span> and end brackets}}s</li>\n  </ul>\n</div>")))
+
+(emmet-run-test-case "Wrap with markup multiplier"
+  #'emmet-wrap-with-markup-test
+  '((("div>ul>li*3") . "<div>\n  <ul>\n    <li>This is gnarly text with $$$s and <span>markup</span> and end brackets}}s</li>\n    <li>This is gnarly text with $$$s and <span>markup</span> and end brackets}}s</li>\n    <li>This is gnarly text with $$$s and <span>markup</span> and end brackets}}s</li>\n  </ul>\n</div>")))
+
+(emmet-run-test-case "Wrap with multiline content"
+  #'emmet-wrap-with-markup-test
+  '((("div>ul>li" "I am some\nmultiline\n  text") . "<div>\n  <ul>\n    <li>I am some\n      multiline\n      text</li>\n  </ul>\n</div>")))
+
+(emmet-run-test-case "Wrap with per-line markup (trailing *)"
+                     #'emmet-wrap-with-markup-test
+                     '((("div>ul>li*" "I am some\nmultiline\n  text") .
+                        "<div>\n  <ul>\n    <li>I am some</li>\n    <li>multiline</li>\n    <li>  text</li>\n  </ul>\n</div>")))
+
+;; Regression test for #54 (broken emmet-find-left-bound behavior
+;;   after tag with attributes)
+(defun emmet-regression-54-test (lis)
+  (let ((es (car lis))
+        (emmet-preview-default nil)
+        (emmet-indent-after-insert nil))
+    (with-temp-buffer
+      (emmet-mode 1)
+      (sgml-mode)
+      (insert "<div class=\"broken\">")
+      (insert es)
+      (emmet-expand-line nil)
+      (buffer-string))))
+
+(emmet-run-test-case "Regression 54 with span"
+  #'emmet-regression-54-test
+  '((("span") . "<div class=\"broken\"><span></span>")))
+
+(emmet-run-test-case "Regression 54 with complex span"
+  #'emmet-regression-54-test
+  '((("span.whut[thing=\"stuff\"]{Huh?}") . "<div class=\"broken\"><span class=\"whut\" thing=\"stuff\">Huh?</span>")))
+
+(define-emmet-transform-html-test-case regression-61-bracket-escapes
+  "div{\\}\\}\\}}" ("<div>}}}</div>"))
+
+(defun emmet-expand-jsx-className?-test (lis)
+  (let ((es (car lis))
+        (indent-tabs-mode nil)
+        (tab-width 2)
+        (standard-indent 2)
+        (emmet-expand-jsx-className? t))
+    (with-temp-buffer
+      (emmet-mode 1)
+      (sgml-mode)
+      (insert es)
+      (emmet-expand-line nil)
+      (buffer-string))))
+
+(emmet-run-test-case "JSX's className 1"
+  #'emmet-expand-jsx-className?-test
+  '(((".jsx") . "<div className=\"jsx\"></div>")))
+
+(emmet-run-test-case "JSX's className 2"
+  #'emmet-expand-jsx-className?-test
+  '(((".jsx>ul.lis>li.itm{x}*2") . "<div className=\"jsx\">\n  <ul className=\"lis\">\n    <li className=\"itm\">x</li>\n    <li className=\"itm\">x</li>\n  </ul>\n</div>")))
+
+(defun emmet-self-closing-tag-style-test (lis)
+  (let ((es (car lis))
+        (emmet-preview-default nil))
+    (with-temp-buffer
+      (emmet-mode 1)
+      (insert es)
+      (emmet-expand-line nil)
+      (buffer-string))))
+
+;; By default, `emmet-self-closing-tag-style' must not break any test code.
+(emmet-run-test-case "Self closing tag style 1"
+  #'emmet-self-closing-tag-style-test
+  '((("meta") . "<meta/>")))
+
+(let ((emmet-self-closing-tag-style "/"))
+  (emmet-run-test-case "Self closing tag style 2"
+    #'emmet-self-closing-tag-style-test
+    '((("meta") . "<meta/>"))))
+
+(let ((emmet-self-closing-tag-style " /"))
+  (emmet-run-test-case "Self closing tag style 3"
+    #'emmet-self-closing-tag-style-test
+    '((("meta") . "<meta />"))))
+
+(let ((emmet-self-closing-tag-style ""))
+  (emmet-run-test-case "Self closing tag style 4"
+    #'emmet-self-closing-tag-style-test
+    '((("meta") . "<meta>"))))
 
 ;; start
 (emmet-test-cases)

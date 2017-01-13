@@ -2,9 +2,16 @@
 ;;
 ;;; Code:
 
-(defconst emmet-mode:version "1.0.5")
+(defconst emmet-mode:version "1.0.10")
 
-(require 'cl)
+(with-no-warnings
+  (require 'cl))
+
+;; for portability with < 24.3 EMACS
+(unless (fboundp 'cl-labels) (fset 'cl-labels 'labels))
+(unless (fboundp 'cl-flet)   (fset 'cl-flet   'flet))
+;; < 22.1
+(unless (fboundp 'string-to-number) (fset 'string-to-number 'string-to-int))
 
 (defmacro emmet-defparameter (symbol &optional initvalue docstring)
   `(progn
@@ -64,6 +71,14 @@
                                        (expr (car it)))
                                    ,then-form)
                                  ,@else-forms)))
+
+(defmacro emmet-find (direction regexp &optional limit-of-search repeat-count)
+  "Regexp-search in given direction, returning the position (or nil)
+and leaving the point in place."
+  `(save-excursion
+     (if (,(intern (concat "re-search-" direction))
+          ,regexp ,limit-of-search t ,repeat-count)
+         (match-beginning 0))))
 
 (defun emmet-regex (regexp string refs)
   "Return a list of (`ref') matches for a `regex' on a `string' or nil."

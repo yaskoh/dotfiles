@@ -1,5 +1,5 @@
 
-__This is a fork of [zencoding-mode](https://github.com/rooney/zencoding) to support [Emmet](http://emmet.io/)'s feature.__
+__This is a fork of [zencoding-mode](https://github.com/rooney/zencoding) to support [Emmet](http://emmet.io/)'s feature set.__
 
 ## About zencoding-mode
 
@@ -13,26 +13,32 @@ Zen Coding has been renamed to [Emmet](http://emmet.io/) and includes an expande
 - [HTML abbreviations](https://github.com/smihica/emmet#html-abbreviations)
 - [CSS abbreviations](https://github.com/smihica/emmet#css-abbreviations)
 
+## Emmet Actions
+
+- [Go to Edit Point](https://github.com/smihica/emmet#go-to-edit-point)
+
+## Supported Emacs
+
+`emmet-mode` is supported by GNU Emacs versions from 23 onward.
+
 ## Installation
 
-### 1. From marmalade
+### 1. From marmalade or MELPA
 
-If your emacs has been installed marmalade then type `M-x package-list-packages` search `emmet-mode X.X.X` and install it.
+If your Emacs has the [marmalade](http://marmalade-repo.org/) or [MELPA](http://melpa.milkbox.net/) package repositories installed, just type `M-x package-list-packages`, search for `emmet-mode`, and install it.
 
-### 1. Manual instalation
+### 1. Manual Installation
 
 Just make sure emmet-mode.el is in your `load-path`.
 
 ### 2. Settings to use.
 
-Open your .emacs or init.el and if you extracted emmet-mode to a directory
-(if you installed from marmalade then this setting is needless)
+If you manually installed emmet-mode to `~/emacs.d/emmet-mode/`, add the following lines to your init.el or .emacs:
 
     (add-to-list 'load-path "~/emacs.d/emmet-mode")
-
-And then just require as normal:
-
     (require 'emmet-mode)
+
+If you installed from marmalade/MELPA then these you shouldn't need to do this.
 
 Enable it by running `M-x emmet-mode`.
 
@@ -43,7 +49,11 @@ You probably want to add it to auto-load on your sgml modes:
     (add-hook 'sgml-mode-hook 'emmet-mode) ;; Auto-start on any markup modes
     (add-hook 'css-mode-hook  'emmet-mode) ;; enable Emmet's css abbreviation.
 
-You can set default indent depth of HTML abbreviation:
+By default, inserted markup will be indented with indent-region, according to the buffer's mode.  To disable this, do:
+
+    (add-hook 'emmet-mode-hook (lambda () (setq emmet-indent-after-insert nil)))
+
+If you disable indent-region, you can set the default indent level thusly:
 
     (add-hook 'emmet-mode-hook (lambda () (setq emmet-indentation 2))) ;; indent 2 spaces.
 
@@ -51,9 +61,20 @@ If you want the cursor to be positioned between first empty quotes after expandi
 
     (setq emmet-move-cursor-between-quotes t) ;; default nil
 
-Or if you don't want to move cursor after expandin:
+Or if you don't want to move cursor after expanding:
 
     (setq emmet-move-cursor-after-expanding nil) ;; default t
+
+If you want to use emmet with react-js's JSX, you probably want emmet to expand 'className="..."' instead of 'class="..."':
+
+    (setq emmet-expand-jsx-className? t) ;; default nil
+
+If you want to customize Self-closing tags style:
+
+    (setq emmet-self-closing-tag-style " /") ;; default "/"
+
+    ;; only " /", "/" and "" are valid.
+    ;; eg. <meta />, <meta/>, <meta>
 
 ## Usage
 
@@ -87,7 +108,7 @@ you'll transform your snippet into the appropriate tag structure.
 
 #### Self-closing tags
 
-    input type=text          <input type="text" name="" value=""/>
+    input[type=text]         <input type="text" name="" value=""/>
     img                      <img src="" alt=""/>
     img>metadata/*2          <img src="" alt="">
                                  <metadata/>
@@ -131,7 +152,7 @@ you'll transform your snippet into the appropriate tag structure.
                              <ol>
                                  <li></li>
                              </ol>
-    ul#q.x.y m=l+            <ul id="q" class="x y" m="l">
+    ul#q.x.y[m=l]            <ul id="q" class="x y" m="l">
                                  <li></li>
                              </ul>
 
@@ -261,27 +282,27 @@ you'll transform your snippet into the appropriate tag structure.
 
 #### Properties
 
-    b x                      <b x=""></b>
-    b x=                     <b x=""></b>
-    b x=""                   <b x=""></b>
-    b x=y                    <b x="y"></b>
-    b x="y"                  <b x="y"></b>
-    b x="()"                 <b x="()"></b>
-    b x m                    <b x="" m=""></b>
-    b x= m=""                <b x="" m=""></b>
-    b x=y m=l                <b x="y" m="l"></b>
-    b/ x=y m=l               <b x="y" m="l"/>
-    b#foo x=y m=l            <b id="foo" x="y" m="l"></b>
-    b.foo x=y m=l            <b class="foo" x="y" m="l"></b>
-    b#foo.bar.mu x=y m=l     <b id="foo" class="bar mu" x="y" m="l"></b>
-    b/#foo.bar.mu x=y m=l    <b id="foo" class="bar mu" x="y" m="l"/>
-    b x=y+b                  <b x="y"></b>
+    b[x]                     <b x=""></b>
+    b[x=]                    <b x=""></b>
+    b[x=""]                  <b x=""></b>
+    b[x=y]                   <b x="y"></b>
+    b[x="y"]                 <b x="y"></b>
+    b[x="()"]                <b x="()"></b>
+    b[x m]                   <b x="" m=""></b>
+    b[x= m=""]               <b x="" m=""></b>
+    b[x=y m=l]               <b x="y" m="l"></b>
+    b/[x=y m=l]              <b x="y" m="l"/>
+    b#foo[x=y m=l]           <b id="foo" x="y" m="l"></b>
+    b.foo[x=y m=l]           <b class="foo" x="y" m="l"></b>
+    b#foo.bar.mu[x=y m=l]    <b id="foo" class="bar mu" x="y" m="l"></b>
+    b/#foo.bar.mu[x=y m=l]   <b id="foo" class="bar mu" x="y" m="l"/>
+    b[x=y]+b                 <b x="y"></b>
                              <b></b>
-    b x=y+b x=y              <b x="y"></b>
+    b[x=y]+b[x=y]            <b x="y"></b>
                              <b x="y"></b>
-    b x=y>b                  <b x="y"><b></b></b>
-    b x=y>b x=y              <b x="y"><b x="y"></b></b>
-    b x=y>b x=y+c x=y        <b x="y">
+    b[x=y]>b                 <b x="y"><b></b></b>
+    b[x=y]>b[x=y]            <b x="y"><b x="y"></b></b>
+    b[x=y]>b[x=y]+c[x=y]     <b x="y">
                                  <b x="y"></b>
                                  <c x="y"></c>
                              </b>
@@ -337,6 +358,33 @@ you'll transform your snippet into the appropriate tag structure.
                              </p>
                              <span>here</span>
                               to continue
+    p{\{Escape brackets!\} and \\}
+                             <p>{Escape brackets} and \</p>
+
+#### Lorem-Ipsum generator
+
+    lorem                    Diam, vulputate ut pharetra sit amet, aliquam id! Egestas sed tempus, urna et pharetra pharetra, massa massa ultricies mi, quis hendrerit dolor magna eget est lorem ipsum dolor sit amet!
+    lorem5                   Hendrerit gravida rutrum quisque non?
+    ipsum3                   Viverra ipsum nunc.
+    p*3>lorem3               <p>Pellentesque elit eget?</p>
+                             <p>Sed odio morbi?</p>
+                             <p>Eget arcu dictum!</p>
+    ul.list>ipsum3*3         <ul class=\"list\">
+                                 Nam libero justo.
+                                 Pellentesque habitant morbi?
+                                 Enim blandit volutpat.
+                             </ul>
+    ul.list>ipsum3.itm*3     <ul class=\"list\">
+                                 <div class=\"itm\">Urna condimentum mattis.</div> <!-- emmet-mode doesn't support implicit tag name resolver -->
+                                 <div class=\"itm\">Sed turpis tincidunt.</div>
+                                 <div class=\"itm\">Faucibus turpis in?</div>
+                             </ul>
+    ul.list>(li.itm>lorem3)*3
+                             <ul class=\"list\">
+                                 <li class=\"itm\">Est pellentesque elit.</li>
+                                 <li class=\"itm\">In nulla posuere.</li>
+                                 <li class=\"itm\">Felis eget nunc.</li>
+                             </ul>
 
 #### Filter: HTML with comments
 
@@ -356,11 +404,11 @@ you'll transform your snippet into the appropriate tag structure.
 
     a|haml                   %a
     a#q.x.y.z|haml           %a#q.x.y.z
-    a#q.x x=y m=l|haml       %a#q.x{:x => "y", :m => "l"}
+    a#q.x[x=y m=l]|haml      %a#q.x{:x => "y", :m => "l"}
     div|haml                 %div
     div.footer|haml          .footer
     .footer|haml             .footer
-    p>{txt}+a href=#+br|haml %p
+    p>{txt}+a[href=#]+br|haml  %p
                                  txt
                                  %a{:href => "#"}
                                  %br
@@ -369,9 +417,9 @@ you'll transform your snippet into the appropriate tag structure.
 
     a|hic                    [:a]
     a#q.x.y.z|hic            [:a#q.x.y.z]
-    a#q.x x=y m=l|hic        [:a#q.x {:x "y", :m "l"}]
+    a#q.x[x=y m=l]|hic       [:a#q.x {:x "y", :m "l"}]
     .footer|hic              [:div.footer]
-    p>a href=#+br|hic        [:p
+    p>a[href=#]+br|hic       [:p
                                  [:a {:href "#"}]
                                  [:br]]
     #q>(a*2>b{x})+p>b|hic    [:div#q
@@ -382,7 +430,7 @@ you'll transform your snippet into the appropriate tag structure.
 
 #### Filter: escape
 
-    script src=&quot;|e      &lt;script src="&amp;quot;"&gt;
+    script[src=&quot;]|e     &lt;script src="&amp;quot;"&gt;
                              &lt;/script&gt;
 
 #### Aliases
@@ -502,3 +550,14 @@ concatenate each property by '+';
                              border-radius: 2px !important;
 
 * If you want further information, see [Emmet's documentation](http://docs.emmet.io/css-abbreviations/).
+
+## Actions
+
+### Go to Edit Point
+
+Traverse between important code points in HTML.
+
+- `<C-M-left>` is "Previous Edit Point" (`M-x emmet-prev-edit-point`)
+- `<C-M-right>` is "Next Edit Point" (`M-x emmet-next-edit-point`)
+
+For further information and demo see [Emmet's documentation](http://docs.emmet.io/actions/go-to-edit-point/).
