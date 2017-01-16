@@ -537,8 +537,9 @@ snippet itself contains a condition that returns the symbol
 
 (defvar yas-minor-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map [(tab)]     'yas-expand)
-    (define-key map (kbd "TAB") 'yas-expand)
+    (define-key map (kbd "C-'") 'yas-expand)
+    ;(define-key map [(tab)]     'yas-expand)
+    ;(define-key map (kbd "TAB") 'yas-expand)
     (define-key map "\C-c&\C-s" 'yas-insert-snippet)
     (define-key map "\C-c&\C-n" 'yas-new-snippet)
     (define-key map "\C-c&\C-v" 'yas-visit-snippet-file)
