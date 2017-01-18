@@ -6,50 +6,50 @@
 
 ** Quickly finding snippets
 
-There are some ways you can quickly find a snippet file:
+There are some ways you can quickly find a snippet file or create a new one:
 
--  =M-x yas-new-snippet=
+-  =M-x yas-new-snippet=, key bindind: =C-c & C-n=
 
-   Prompts you for a snippet name, then tries to guess a suitable
-   directory to store it, prompting you for creation if it does not
-   exist. Finally, places you in a new buffer set to =snippet-mode= so
-   you can write your snippet.
+   Creates a new buffer with a template for making a new snippet.  The
+   buffer is in =snippet-mode= (see [[snippet-mode][below]]).  When you are done editing
+   the new snippet, use [[yas-load-snippet-buffer-and-close][=C-c C-c=]] to save it.
 
--  =M-x yas-find-snippets=
-
-   Lets you find the snippet file in the directory the snippet was
-   loaded from (if it exists) like =find-file-other-window=. The
-   directory searching logic is similar to =M-x yas-new-snippet=.
-
--  =M-x yas-visit-snippet-file=
+-  =M-x yas-visit-snippet-file=, key binding: =C-c & C-v=
 
    Prompts you for possible snippet expansions like
    [[sym:yas-insert-snippet][=yas-insert-snippet=]], but instead of expanding it, takes you directly
    to the snippet definition's file, if it exists.
 
-Once you find this file it will be set to =snippet-mode= (see ahead) and
-you can start editing your snippet.
+Once you find this file it will be set to =snippet-mode= (see [[snippet-mode][ahead]])
+and you can start editing your snippet.
 
-** Using the =snippet-mode= major mode
+** Using the =snippet-mode= major mode <<snippet-mode>>
 
 There is a major mode =snippet-mode= to edit snippets. You can set the
 buffer to this mode with =M-x snippet-mode=. It provides reasonably
 useful syntax highlighting.
 
-Two commands are defined in this mode:
+Three commands are defined in this mode:
 
--  =M-x yas-load-snippet-buffer=
+-  =M-x yas-load-snippet-buffer=, key binding: =C-c C-l=
 
-     When editing a snippet, this loads the snippet into the correct
-     mode and menu. Bound to =C-c C-c= by default while in
-     =snippet-mode=.
+   Prompts for a snippet table (with a default based on snippet's
+   major mode) and loads the snippet currently being edited.
 
--  =M-x yas-tryout-snippet=
+-  =M-x yas-load-snippet-buffer-and-close=, key binding: =C-c C-c=
+   <<yas-load-snippet-buffer-and-close>>
 
-     When editing a snippet, this opens a new empty buffer, sets it to
-     the appropriate major mode and inserts the snippet there, so you
-     can see what it looks like. This is bound to =C-c C-t= while in
-     =snippet-mode=.
+   Like =yas-load-snippet-buffer=, but also saves the snippet and
+   calls =quit-window=.  The destination is decided based on the
+   chosen snippet table and snippet collection directly (defaulting to
+   the first directory in =yas-snippet-dirs= (see [[file:snippet-organization.org][Organizing Snippets]]
+   for more detail on how snippets are organized).
+
+-  =M-x yas-tryout-snippet=, key binding: =C-c C-t=
+
+   When editing a snippet, this opens a new empty buffer, sets it to
+   the appropriate major mode and inserts the snippet there, so you
+   can see what it looks like.
 
 There are also /snippets for writing snippets/: =vars=, =$f= and =$m=
 :-).
@@ -169,12 +169,28 @@ This binding will be recorded in the keymap =html-mode-map=. To expand a
 paragraph tag newlines, just press =C-u C-c C-c C-m=. Omitting the =C-u=
 will expand the paragraph tag without newlines.
 
+** =# type:= =snippet= or =command=
+
+If the =type= directive is set to =command=, the body of the snippet
+is interpreted as lisp code to be evaluated when the snippet is
+triggered.
+
+If it's =snippet= (the default when there is no =type= directive), the
+snippet body will be parsed according to the [[Template Syntax]],
+described below.
+
+** =# uuid:= unique identifier
+
+This provides to a way to identify a snippet, independent of its name.
+Loading a second snippet file with the same uuid would replace the
+previous snippet.
+
 ** =# contributor:= snippet author
 
 This is optional and has no effect whatsoever on snippet functionality,
 but it looks nice.
 
-* Template syntax
+* Template Syntax
 
 The syntax of the snippet template is simple but powerful, very similar
 to TextMate's.
@@ -182,18 +198,18 @@ to TextMate's.
 ** Plain Text
 
 Arbitrary text can be included as the content of a template. They are
-usually interpreted as plain text, except =$= and ==. You need to
-use \` to escape them: =\$= and =\=. The \` itself may also needed to be
+usually interpreted as plain text, except =$= and =`=. You need to
+use =\= to escape them: =\$= and =\`=. The =\= itself may also needed to be
 escaped as =\\= sometimes.
 
 ** Embedded Emacs-lisp code
 
 Emacs-Lisp code can be embedded inside the template, written inside
-back-quotes (==). The lisp forms are evaluated when the snippet is
+back-quotes (=`=). The lisp forms are evaluated when the snippet is
 being expanded. The evaluation is done in the same buffer as the
 snippet being expanded.
 
-Here's an example for c-mode` to calculate the header file guard
+Here's an example for c-mode to calculate the header file guard
 dynamically:
 
 #+BEGIN_SRC snippet
@@ -219,6 +235,27 @@ to "wrap" the selected region inside your recently inserted snippet.
 Alternatively, you can also customize the variable
 [[sym:yas-wrap-around-region][=yas-wrap-around-region=]] to =t= which will do this automatically.
 
+*** Note: backquote expressions should not modify the buffer
+
+Please note that the lisp forms in backquotes should *not* modify the
+buffer, doing so will trigger a warning.  For example, instead of
+doing
+
+#+BEGIN_SRC snippet
+  Timestamp: `(insert (current-time-string))`
+#+END_SRC
+
+do this:
+#+BEGIN_SRC snippet
+  Timestamp: `(current-time-string)`
+#+END_SRC
+
+The warning may be suppressed with the following code in your init file:
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'warning-suppress-types '(yasnippet backquote-change))
+#+END_SRC
+
+
 ** Tab stop fields
 
 Tab stops are fields that you can navigate back and forth by =TAB= and
@@ -242,10 +279,10 @@ like this:
 
 They acts as the default value for a tab stop. But when you firstly
 type at a tab stop, the default value will be replaced by your typing.
-The number can be omitted if you don't want to create [[mirrors]] or
-[[transformations]] for this field.
+The number can be omitted if you don't want to create [[mirrors-fields][mirrors]] or
+[[mirror-transformations][transformations]] for this field.
 
-** <<Mirrors>>
+** Mirrors <<mirrors-fields>>
 
 We refer the tab stops with placeholders as a /field/. A field can have
 mirrors. Its mirrors will get updated when you change the text of a
@@ -265,14 +302,15 @@ The tab stops with the same number to the field act as its mirrors. If
 none of the tab stops has an initial value, the first one is selected as
 the field and others mirrors.
 
-** Mirrors with <<transformations>>
+** Mirrors with transformations <<mirror-transformations>>
 
-If the value of an =${n:=-construct starts with and contains =$(=, then
-it is interpreted as a mirror for field =n= with a transformation. The
-mirror's text content is calculated according to this transformation,
-which is Emacs-lisp code that gets evaluated in an environment where the
-variable =text= (or [[sym:yas-text][=yas-text=]]) is bound to the text content (string)
-contained in the field =n=.Here's an example for Objective-C:
+If the value of an =${n:=-construct starts with and contains =$(=,
+then it is interpreted as a mirror for field =n= with a
+transformation. The mirror's text content is calculated according to
+this transformation, which is Emacs-lisp code that gets evaluated in
+an environment where the variable [[sym:yas-text][=yas-text=]] is bound to the text
+content (string) contained in the field =n=. Here's an example for
+Objective-C:
 
 #+BEGIN_SRC snippet
   - (${1:id})${2:foo}
@@ -280,7 +318,7 @@ contained in the field =n=.Here's an example for Objective-C:
       return $2;
   }
 
-  - (void)set${2:$(capitalize text)}:($1)aValue
+  - (void)set${2:$(capitalize yas-text)}:($1)aValue
   {
       [$2 autorelease];
       $2 = [aValue retain];
@@ -288,12 +326,13 @@ contained in the field =n=.Here's an example for Objective-C:
   $0
 #+END_SRC
 
-Look at =${2:$(capitalize text)}=, it is a mirror with transformation
-instead of a field. The actual field is at the first line: =${2:foo}=.
-When you type text in =${2:foo}=, the transformation will be evaluated
-and the result will be placed there as the transformed text. So in this
-example, if you type "baz" in the field, the transformed text will be
-"Baz". This example is also available in the screencast.
+Look at =${2:$(capitalize yas-text)}=, it is a mirror with
+transformation instead of a field. The actual field is at the first
+line: =${2:foo}=. When you type text in =${2:foo}=, the transformation
+will be evaluated and the result will be placed there as the
+transformed text. So in this example, if you type "baz" in the field,
+the transformed text will be "Baz". This example is also available in
+the screencast.
 
 Another example is for =rst-mode=. In reStructuredText, the document
 title can be some text surrounded by "===" below and above. The "==="
@@ -316,9 +355,9 @@ is a valid title but
 is not. Here's an snippet for rst title:
 
 #+BEGIN_SRC snippet
-  ${1:$(make-string (string-width text) ?\=)}
+  ${1:$(make-string (string-width yas-text) ?\=)}
   ${1:Title}
-  ${1:$(make-string (string-width text) ?\=)}
+  ${1:$(make-string (string-width yas-text) ?\=)}
 
   $0
 #+END_SRC
@@ -400,3 +439,9 @@ the exit marker.
 By the way, =C-d= will only clear the field if you cursor is at the
 beginning of the field /and/ it hasn't been changed yet. Otherwise, it
 performs the normal Emacs =delete-char= command.
+
+** Indentation markers
+
+If [[sym:yas-indent-line][=yas-indent-line=]] is *not* set to '=auto=, it's still possible to
+indent specific lines by adding an indentation marker, =$>=, somewhere
+on the line.
