@@ -9,6 +9,7 @@
 /.emacs.d/*
 !/.emacs.d/init.el
 !/.emacs.d/elisp
+!/.emacs.d/inits
 /.emacs.d/elisp/bk/*
 
 !/.vimrc
