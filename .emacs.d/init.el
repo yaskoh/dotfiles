@@ -1,4 +1,4 @@
-;;; init.el --- emacs run-command file.
+;;; init.el --- emacs run-command file. -*- lexical-binding: t -*-
 
 ;;; Commentary:
 

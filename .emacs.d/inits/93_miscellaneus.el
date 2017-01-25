@@ -1,8 +1,17 @@
 ;; ================================================
 ;; Settings
 ;; ================================================
-;; モードラインに列番号を表示
+;; メニューバーを隠す
+(menu-bar-mode -1)
+;; ツールバーを隠す
+(tool-bar-mode -1)
+;; モードラインに行、列番号を表示
+(line-number-mode t)
 (column-number-mode t)
+
+;; 左側に行番号を表示させる
+(global-linum-mode t)
+
 ;; タブを使わない
 (setq-default indent-tabs-mode nil)
 ;; タブ幅を4に設定
@@ -15,10 +24,16 @@
              (cons "." "~/.emacs.d/backups/"))
 (setq auto-save-file-name-transforms
       `((".*" ,(expand-file-name "~/.emacs.d/backups/") t)))
-;; 行番号を表示させる
-(global-linum-mode t)
+
 ;; 行ハイライト
 (global-hl-line-mode)
+
 ;; ビープ音を消す
 (setq visible-bell t)
 (setq ring-bell-function 'ignore)
+
+;; 括弧を光らせる
+(show-paren-mode 1)
+
+;; gzファイルも編集できるようにする
+(auto-compression-mode t)

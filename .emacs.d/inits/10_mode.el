@@ -1,4 +1,25 @@
 ;; ================================================
+;; evil.el
+;; 2014/1/16 追加
+;; http://www.emacswiki.org/emacs/download/tabbar.el
+;; ================================================
+(require 'evil)
+(evil-mode 1)
+
+(setcdr evil-insert-state-map nil)
+(bind-key [escape] 'evil-normal-state evil-insert-state-map)
+
+
+;; ================================================
+;; evil-mode-line.el
+;; 2014/1/17 追加
+;; https://raw.github.com/tarao/evil-plugins/master/evil-mode-line.el
+;; (mode-line-colorも追加)
+;; ================================================
+(require 'evil-mode-line)
+
+
+;; ================================================
 ;; org-mode
 ;; 2014/4/6
 ;; http://orgmode.org/ja/
@@ -21,6 +42,23 @@
 (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+
+
+;; ================================================
+;; tabbar.el
+;; 2014/1/16 追加
+;; http://www.emacswiki.org/emacs/download/tabbar.el
+;; ================================================
+(require 'tabbar)
+(tabbar-mode 1)
+
+
+;; ================================================
+;; cua-mode（矩形編集）の使用
+;; ================================================
+(cua-mode t)
+(setq cua-enable-cua-keys nil)
+
 
 ;; ================================================
 ;; python-mode.el
