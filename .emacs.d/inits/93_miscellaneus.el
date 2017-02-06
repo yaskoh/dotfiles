@@ -37,3 +37,9 @@
 
 ;; gzファイルも編集できるようにする
 (auto-compression-mode t)
+
+;; 最終行の場合、next-lineで行を追加
+;(setq next-line-add-newlines t)
+
+;; ファイルのデフォルトエンコーディングを変更
+(set-default 'buffer-file-coding-system 'utf-8-unix)

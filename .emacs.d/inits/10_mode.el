@@ -1,3 +1,6 @@
+;; default mode on new buffers
+(setq default-major-mode 'org-mode)
+
 ;; ================================================
 ;; evil.el
 ;; 2014/1/16 追加
@@ -24,7 +27,7 @@
 ;; 2014/4/6
 ;; http://orgmode.org/ja/
 ;; ================================================
-;(require 'org)
+(require 'org)
 ;(require 'org-install)
 (bind-key "C-c l" 'org-store-link org-mode-map)
 (bind-key "C-c c" 'org-capture org-mode-map)

@@ -12,7 +12,8 @@
 (bind-key "C-c C-x l" 'px-preview)
 (bind-key "C-h" 'delete-backward-char)
 (bind-key "C-j" 'newline)
-(bind-key "C-l" 'evil-normal-state)
+; vimと合わせるため、"C-["を主に使うこととする。"C-l"には別キー割り当て希望。
+; (bind-key "C-l" 'evil-normal-state)
 (bind-key "C-m" 'newline-and-indent)
 (bind-key "C-t" 'forward-char)
 (bind-key "C-x d" 'dired-toggle)
