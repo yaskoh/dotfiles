@@ -35,6 +35,7 @@
 ;; auto-complete
 ;; 2014/3/23
 ;; https://github.com/auto-complete/auto-complete/
+;; obsolete : 2017/2/27, company
 ;; ================================================
 (require 'auto-complete-config)
 (ac-config-default)

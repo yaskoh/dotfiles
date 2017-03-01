@@ -5,6 +5,14 @@
 ;;; Code:
 
 ;; ================================================
+;; vc disabled
+;; 2017/2/20
+;; https://www.rainyman.net/nest/?p=1117
+;; ================================================
+(eval-after-load "vc" '(remove-hook 'find-file-hooks 'vc-find-file-hook))
+(setq vc-handled-backends nil)
+
+;; ================================================
 ;; Load-Path
 ;; ================================================
 ;; load pathを追加する関数を定義
