@@ -67,6 +67,7 @@
 (require 'emmet-mode)
 (add-hook 'web-mode-hook 'emmet-mode)
 (add-hook 'css-mode-hook 'emmet-mode)
+(add-hook 'nxml-mode-hook 'emmet-mode)
 (add-hook 'emmet-mode-hook (lambda () (setq emmet-indentation 2)))
 
 
@@ -121,3 +122,4 @@
 ;; https://github.com/emacsmirror/px
 ;; ================================================
 (require 'px)
+

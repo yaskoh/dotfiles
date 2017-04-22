@@ -1,6 +1,3 @@
-;; default mode on new buffers
-(setq default-major-mode 'org-mode)
-
 ;; ================================================
 ;; evil.el
 ;; 2014/1/16 追加
@@ -20,19 +17,6 @@
 ;; (mode-line-colorも追加)
 ;; ================================================
 (require 'evil-mode-line)
-
-
-;; ================================================
-;; org-mode
-;; 2014/4/6
-;; http://orgmode.org/ja/
-;; ================================================
-(require 'org)
-;(require 'org-install)
-(bind-key "C-c l" 'org-store-link org-mode-map)
-(bind-key "C-c c" 'org-capture org-mode-map)
-(bind-key "C-c a" 'org-agenda org-mode-map)
-(bind-key "C-c b" 'org-iswitchb org-mode-map)
 
 
 ;; ================================================
@@ -59,8 +43,8 @@
 ;; ================================================
 ;; cua-mode（矩形編集）の使用
 ;; ================================================
-(cua-mode t)
-(setq cua-enable-cua-keys nil)
+;(cua-mode t)
+;(setq cua-enable-cua-keys nil)
 
 
 ;; ================================================
