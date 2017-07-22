@@ -1,6 +1,3 @@
-;; default mode on new buffers
-(setq default-major-mode 'org-mode)
-
 ;; ================================================
 ;; evil.el
 ;; 2014/1/16 追加
@@ -23,19 +20,6 @@
 
 
 ;; ================================================
-;; org-mode
-;; 2014/4/6
-;; http://orgmode.org/ja/
-;; ================================================
-(require 'org)
-;(require 'org-install)
-(bind-key "C-c l" 'org-store-link org-mode-map)
-(bind-key "C-c c" 'org-capture org-mode-map)
-(bind-key "C-c a" 'org-agenda org-mode-map)
-(bind-key "C-c b" 'org-iswitchb org-mode-map)
-
-
-;; ================================================
 ;; web-mode
 ;; ================================================
 (require 'web-mode)
@@ -45,6 +29,17 @@
 (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+
+
+;; ================================================
+;; js2-mode
+;; 2017/7/17 added
+;; https://github.com/mooz/js2-mode
+;; ================================================
+(require 'js2-mode)
+(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+(add-to-list 'interpreter-mode-alist '("node" . js2-mode))
+(add-hook 'js-mode-hook 'js2-minor-mode)
 
 
 ;; ================================================
@@ -59,8 +54,8 @@
 ;; ================================================
 ;; cua-mode（矩形編集）の使用
 ;; ================================================
-(cua-mode t)
-(setq cua-enable-cua-keys nil)
+;(cua-mode t)
+;(setq cua-enable-cua-keys nil)
 
 
 ;; ================================================

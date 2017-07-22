@@ -41,3 +41,5 @@
 
 ;; Start eshell when emacs starting
 (add-hook 'after-init-hook (lambda () (eshell)))
+
+(defalias 'nes '(lambda () (interactive) (eshell "")) "Create 'New EShell' buffer.")

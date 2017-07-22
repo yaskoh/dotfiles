@@ -4,22 +4,33 @@
 ;; ================================================
 ;; Key設定
 ;; ================================================
-(bind-key* "C-o" 'other-window)
-(bind-key* "C-x o" 'other-frame)
+(bind-keys* 
+           ("C-o" . other-window)
+           ("C-x o" . other-frame)
+           )
 
-(bind-key "C-c s" 'scheme-other-window)
-(bind-key "C-c C-c" 'px-toggle)
-(bind-key "C-c C-x l" 'px-preview)
-(bind-key "C-h" 'delete-backward-char)
-(bind-key "C-j" 'newline)
-(bind-key "C-l" '(lambda () (interactive) (other-window -1)))
-(bind-key "C-m" 'newline-and-indent)
-(bind-key "C-t" 'forward-char)
-(bind-key "C-x d" 'dired-toggle)
-(bind-key "C-x ?" 'help-command)
-(bind-key "C-z" 'undo)
-(bind-key "C-/" 'transpose-chars)
+(bind-keys :map global-map
+           ("C-c s" . scheme-other-window)
+           ("C-c C-c" . px-toggle)
+           ("C-c C-x l" . px-preview)
+           ("C-h" . delete-backward-char)
+           ("C-j" . newline)
+           ("C-l" . (lambda () (interactive) (other-window -1)))
+           ("C-m" . newline-and-indent)
+           ("C-t" . forward-char)
+           ("C-x d" . dired-toggle)
+           ("C-x ?" . help-command)
+           ("C-z" . undo)
+           ("C-/" . transpose-chars)
+           ("M-t" . forward-word)
+           ("M-r" . replace-string)
+           ("M-z" . transpose-words)
+           )
 
-(bind-key "M-t" 'forward-word)
-(bind-key "M-r" 'replace-string)
-(bind-key "M-z" 'transpose-words)
+; help-modeにevilでmodeが移り変われれば良いのでは。
+; evil周りの設定がまだよくわからない。
+;(bind-keys* :map help-mode-map
+;           ("C-o" . other-window)
+;           ("C-x o" . other-frame)
+;           )
+;(bind-key "C-c s" 'scheme-other-window)
