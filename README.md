@@ -18,6 +18,8 @@ dotfiles
   - this repository
   - anything else you need
 
+- Check %HOME% path due to use the following batch and each apps.
+
 - Execute winlink.bat
   - win10, we have to run cmd as Administrator.
 
