@@ -26,7 +26,7 @@
             (normal-top-level-add-subdirs-to-load-path))))))
 
 ;; 下記ディレクトリおよびサブディレクトリをサブディレクトリに追加
-(add-to-load-path "elisp" "el-get")
+(add-to-load-path "elisp")
 
 ;; ================================================
 ;; init-loader
