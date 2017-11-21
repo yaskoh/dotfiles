@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: un
+# key: un
+# --
+using namespace $1;
+$0
