@@ -1,0 +1,10 @@
+# key: if
+# name: if
+# --
+if ${1:condition}
+then
+    ${2:if-statement}
+${3:else
+    ${4:else-statement}}
+fi
+$0
