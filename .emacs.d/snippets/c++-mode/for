@@ -1,0 +1,6 @@
+# key: for
+# name: for
+# --
+for(${1:init}; ${2:cond}; ${3:each}) {
+  $0
+}
