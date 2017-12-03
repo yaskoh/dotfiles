@@ -1,5 +1,6 @@
-# key: while
+# -*- mode: snippet -*-
 # name: while
+# key: while
 # --
 while (${1:Condition}) {
   ${0:Statement}

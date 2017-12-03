@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: f
+# key: f
+# --
+${1:int} ${2:func} ($3) {
+  $0
+}
