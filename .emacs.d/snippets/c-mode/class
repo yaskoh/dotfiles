@@ -1,0 +1,9 @@
+# key: class
+# name: class
+# --
+class ${1:ClassName}
+{
+  ${2:PrivateMembers}
+public:
+  $0
+};

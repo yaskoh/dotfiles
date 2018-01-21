@@ -1,0 +1,5 @@
+# key: #i
+# name: #i
+# --
+#include <$1>
+$0
