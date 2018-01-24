@@ -62,7 +62,7 @@ Darwin*)
     # rbenv
     export PATH=${HOME}/.rbenv/bin:${HOME}/.pyenv/shims:${PATH}
     eval "$(rbenv init -)"
-    # MacPort
+    MacPort
     export PATH="/opt/local/bin:/opt/local/sbin:${PATH}"
     ;;
 
@@ -78,10 +78,6 @@ Linux*)
     # rbenv
     export PATH="${HOME}/.rbenv/bin:${PATH}"
     eval "$(rbenv init -)"
-    # pyenv
-    export PYENV_ROOT="${HOME}/.pyenv"
-    export PATH="${PYENV_ROOT}/bin:${PATH}"
-    eval "$(pyenv init -)"
     # for Debian
     export PATH=${PATH}:/sbin
     ;;
