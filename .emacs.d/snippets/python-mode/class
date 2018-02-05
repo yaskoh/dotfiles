@@ -1,0 +1,5 @@
+# key: class
+# name: class
+# --
+class ${1:PythonClass}(${2:ihneritance}):
+    $0
