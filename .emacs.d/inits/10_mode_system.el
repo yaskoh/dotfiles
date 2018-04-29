@@ -13,6 +13,8 @@
 (bind-key "C-c a" 'org-agenda org-mode-map)
 (bind-key "C-c b" 'org-iswitchb org-mode-map)
 
+(add-to-list 'auto-mode-alist '("\\.txt\\'" . org-mode))
+
 ;; ================================================================
 ;; nxml-mode
 ;; 2017/4/9
