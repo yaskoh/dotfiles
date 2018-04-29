@@ -11,8 +11,7 @@
 
 (bind-keys :map global-map
            ("C-c s" . scheme-other-window)
-           ("C-c C-c" . px-toggle)
-           ("C-c C-x l" . px-preview)
+           ("C-c C-x l" . px-toggle)
            ("C-h" . delete-backward-char)
            ("C-j" . newline)
            ("C-l" . (lambda () (interactive) (other-window -1)))
