@@ -194,3 +194,10 @@
   (interactive)
   (sql-product-interactive 'ms))
 
+
+;; ================================================
+;; go-mode
+;; 2018/6/8 追加
+;; https://github.com/dominikh/go-mode.el
+;; ================================================
+(require 'go-mode)

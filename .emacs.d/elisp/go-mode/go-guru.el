@@ -117,7 +117,7 @@
   (define-key m ">" #'go-guru-callees)
   (define-key m "x" #'go-guru-expand-region)) ;; x for expand
 
-(define-key go-mode-map (kbd "C-c C-o") #'go-guru-map)
+(define-key go-mode-map (kbd "C-c C-o") 'go-guru-map)
 
 (easy-menu-define go-guru-mode-menu go-mode-map
   "Menu for Go Guru."
@@ -319,11 +319,11 @@ If BUFFER, return the number of characters in that buffer instead."
   "Go to the OFFSETth byte in the current line."
   (goto-char (byte-to-position (+ (position-bytes (point-at-bol)) (1- offset)))))
 
-(defun go-guru--goto-pos (posn)
+(defun go-guru--goto-pos (posn other-window)
   "Find the file containing the position POSN (of the form `file:line:col')
 set the point to it, switching the current buffer."
   (let ((file-line-pos (split-string posn ":")))
-    (find-file (car file-line-pos))
+    (funcall (if other-window #'find-file-other-window #'find-file) (car file-line-pos))
     (goto-char (point-min))
     (forward-line (1- (string-to-number (cadr file-line-pos))))
     (go-guru--goto-byte-column (string-to-number (cl-caddr file-line-pos)))))
@@ -359,7 +359,7 @@ function containing the current point."
   (go-guru--start "callstack"))
 
 ;;;###autoload
-(defun go-guru-definition ()
+(defun go-guru-definition (&optional other-window)
   "Jump to the definition of the selected identifier."
   (interactive)
   (or buffer-file-name
@@ -367,9 +367,18 @@ function containing the current point."
   (let* ((res (go-guru--json "definition"))
 	 (desc (cdr (assoc 'desc res))))
     (push-mark)
-    (ring-insert find-tag-marker-ring (point-marker))
-    (go-guru--goto-pos (cdr (assoc 'objpos res)))
+    (if (eval-when-compile (fboundp 'xref-push-marker-stack))
+        ;; TODO: Integrate this facility with XRef.
+        (xref-push-marker-stack)
+      (ring-insert find-tag-marker-ring (point-marker)))
+    (go-guru--goto-pos (cdr (assoc 'objpos res)) other-window)
     (message "%s" desc)))
+
+;;;###autoload
+(defun go-guru-definition-other-window ()
+  "Jump to the defintion of the selected identifier in another window"
+  (interactive)
+  (go-guru-definition t))
 
 ;;;###autoload
 (defun go-guru-describe ()
@@ -450,6 +459,22 @@ highlights from previously highlighted identifier."
   (go-guru-unhighlight-identifiers)
   (go-guru--hl-identifier))
 
+;;;###autoload
+(define-minor-mode go-guru-hl-identifier-mode
+  "Highlight instances of the identifier at point after a short
+timeout."
+  :group 'go-guru
+  (if go-guru-hl-identifier-mode
+      (progn
+	(go-guru--hl-set-timer)
+	;; Unhighlight if point moves off identifier
+	(add-hook 'post-command-hook #'go-guru--hl-identifiers-post-command-hook nil t)
+	;; Unhighlight any time the buffer changes
+	(add-hook 'before-change-functions #'go-guru--hl-identifiers-before-change-function nil t))
+    (remove-hook 'post-command-hook #'go-guru--hl-identifiers-post-command-hook t)
+    (remove-hook 'before-change-functions #'go-guru--hl-identifiers-before-change-function t)
+    (go-guru-unhighlight-identifiers)))
+
 (defun go-guru--hl-identifier ()
   "Highlight all instances of the identifier under point."
   (let ((posn (cdr (assoc 'sameids (go-guru-what)))))
@@ -477,22 +502,6 @@ identifier at point, if necessary."
 				      go-guru-hl-identifier-idle-time
 				      t
 				      #'go-guru--hl-identifiers-function)))
-
-;;;###autoload
-(define-minor-mode go-guru-hl-identifier-mode
-  "Highlight instances of the identifier at point after a short
-timeout."
-  :group 'go-guru
-  (if go-guru-hl-identifier-mode
-      (progn
-	(go-guru--hl-set-timer)
-	;; Unhighlight if point moves off identifier
-	(add-hook 'post-command-hook #'go-guru--hl-identifiers-post-command-hook nil t)
-	;; Unhighlight any time the buffer changes
-	(add-hook 'before-change-functions #'go-guru--hl-identifiers-before-change-function nil t))
-    (remove-hook 'post-command-hook #'go-guru--hl-identifiers-post-command-hook t)
-    (remove-hook 'before-change-functions #'go-guru--hl-identifiers-before-change-function t)
-    (go-guru-unhighlight-identifiers)))
 
 (defun go-guru--on-overlay-p (id)
   "Return whether point is on a guru overlay of type ID."
