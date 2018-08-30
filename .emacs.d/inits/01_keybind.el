@@ -19,6 +19,8 @@
            ("C-t" . forward-char)
            ("C-x d" . dired-toggle)
            ("C-x ?" . help-command)
+           ("C-x -" . split-window-below)
+           ("C-x |" . split-window-right)
            ("C-z" . undo)
            ("C-/" . transpose-chars)
            ("M-t" . forward-word)
