@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: switch
+# key: switch
+# --
+switch ${1:initialize; }${2:data }{
+    case ${3:v1}:
+        ${4:s1}
+    case ${5:v2}:
+        ${6:s2}
+    default:
+        ${7:s3}
+}

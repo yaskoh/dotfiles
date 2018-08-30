@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: p
+# key: p
+# --
+package $1
+$0

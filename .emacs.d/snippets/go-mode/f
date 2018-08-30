@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: f
+# key: f
+# --
+func ${1:funcName}(${2:Args}) ${3:returnType} {
+    $0
+}

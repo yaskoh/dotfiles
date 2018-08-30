@@ -1,0 +1,7 @@
+# key: m
+# name: m
+# --
+func main() {
+    $1
+}
+$0
