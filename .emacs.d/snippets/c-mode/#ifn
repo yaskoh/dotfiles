@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: #ifn
+# key: #ifn
+# --
+#ifndef ${1:def}
+#define ${2:def}
+$3
+#endif
+$0
