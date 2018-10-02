@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # variables
-DOT_FILES=( .zshrc .emacs.d .vimrc .tmux.conf .bashrc)
+DOT_FILES=( .zshrc .emacs.d .vimrc .tmux.conf .tmux-darwin.conf .bashrc)
 
 # make symbolic link
 cwd=$(cd $(dirname $0); pwd)

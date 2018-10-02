@@ -17,7 +17,7 @@
 
 !/.zshrc
 
-!/.tmux.conf
+!/.tmux*.conf
 
 !/site-lisp
 /site-lisp/*
