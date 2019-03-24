@@ -201,3 +201,10 @@
 ;; https://github.com/dominikh/go-mode.el
 ;; ================================================
 (require 'go-mode)
+
+;; ================================================
+;; erlang.el
+;; 2018/10/20 追加
+;; http://erlang.org/download/contrib/erlang.el
+;; ================================================
+(require 'erlang-start)
