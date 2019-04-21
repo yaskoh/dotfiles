@@ -22,3 +22,5 @@
 !/site-lisp
 /site-lisp/*
 !/site-lisp/siteinit.l
+
+!/vscode
