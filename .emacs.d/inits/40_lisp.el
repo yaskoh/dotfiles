@@ -91,6 +91,7 @@
 ;; 2016/05/12
 ;; https://common-lisp.net/project/slime/
 ;; ================================================
+(use-package slime)
 (require 'slime-autoloads)
 (when (eq system-type 'windows-nt)
   (setq inferior-lisp-program "wx86cl64"))

@@ -6,7 +6,7 @@
 ;; default mode on new buffers
 (setq default-major-mode 'org-mode)
 
-(require 'org)
+(use-package org)
 ;(require 'org-install)
 (bind-key "C-c l" 'org-store-link org-mode-map)
 (bind-key "C-c c" 'org-capture org-mode-map)

@@ -1,10 +1,13 @@
-;; use-packageが読み込まれていれば読み込まているはず。
-(require 'bind-key)
+;;; 01_keybind.el -- set keybinds
+
+;;; Commentary:
+
+;;; Code:
 
 ;; ================================================
 ;; Key設定
 ;; ================================================
-(bind-keys* 
+(bind-keys*
            ("C-o" . other-window)
            ("C-x o" . other-frame)
            )
@@ -17,16 +20,21 @@
            ("C-l" . (lambda () (interactive) (other-window -1)))
            ("C-m" . newline-and-indent)
            ("C-t" . forward-char)
+           ("C-s" . swiper)
            ("C-x d" . dired-toggle)
            ("C-x ?" . help-command)
            ("C-x -" . split-window-below)
            ("C-x |" . split-window-right)
+           ("C-x C-f" . counsel-find-file)
            ("C-z" . undo)
+           ("C-M-z" . redo)
            ("C-/" . transpose-chars)
            ("M-t" . forward-word)
            ("M-r" . replace-string)
+           ("M-x" . counsel-M-x)
            ("M-z" . transpose-words)
            )
+
 
 ; help-modeにevilでmodeが移り変われれば良いのでは。
 ; evil周りの設定がまだよくわからない。
@@ -35,3 +43,5 @@
 ;           ("C-x o" . other-frame)
 ;           )
 ;(bind-key "C-c s" 'scheme-other-window)
+
+;;; 01_keybind.el ends here

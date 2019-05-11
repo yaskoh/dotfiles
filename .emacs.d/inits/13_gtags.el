@@ -1,4 +1,4 @@
-(require 'gtags)
+(use-package gtags)
 (setq gtags-path-style 'relative)
 (setq gtags-mode-hook
       '(lambda ()

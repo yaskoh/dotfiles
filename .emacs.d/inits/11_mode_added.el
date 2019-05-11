@@ -3,7 +3,7 @@
 ;; 2014/1/16 追加
 ;; http://www.emacswiki.org/emacs/download/tabbar.el
 ;; ================================================
-(require 'evil)
+(use-package evil)
 (evil-mode 1)
 
 (setcdr evil-insert-state-map nil)
@@ -22,7 +22,7 @@
 ;; ================================================
 ;; web-mode
 ;; ================================================
-(require 'web-mode)
+(use-package web-mode)
 (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.jsp\\'" . web-mode))
@@ -36,7 +36,7 @@
 ;; 2017/7/17 added
 ;; https://github.com/mooz/js2-mode
 ;; ================================================
-(require 'js2-mode)
+(use-package js2-mode)
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
 (add-hook 'js-mode-hook 'js2-minor-mode)
@@ -47,7 +47,7 @@
 ;; 2014/1/16 追加
 ;; http://www.emacswiki.org/emacs/download/tabbar.el
 ;; ================================================
-(require 'tabbar)
+(use-package tabbar)
 (tabbar-mode 1)
 
 
@@ -63,7 +63,7 @@
 ;; 2013/1/13 追加, 2014/8/4 修正(org-modeにあたりがあった)
 ;; https://launchpad.net/python-mode/
 ;; ================================================
-(require 'python-mode)
+(use-package python-mode)
 (setq py-load-pymacs-p t)
 
 ;; ================================================
@@ -88,7 +88,7 @@
 ;; 2014/12/11
 ;; http://www.emacswiki.org/cgi-bin/wiki/cobol-mode.el
 ;; ================================================
-(require 'cobol-mode)
+(use-package cobol-mode)
 (setq auto-mode-alist (append auto-mode-alist
                               '(("\\.cob$" . cobol-mode))))
 (autoload 'cobol-mode "cobol-mode" "Major mode for Tandem COBOL files." t nil)
@@ -122,7 +122,7 @@
 ;; C-c C-r : 'sql-send-region
 ;; C-c C-s : 'sql-send-string
 ;; C-c C-b : 'sql-send-buffer
-(require 'sql)
+(use-package sql)
 
 (add-hook 'sql-interactive-mode-hook
           #'(lambda ()
@@ -200,11 +200,11 @@
 ;; 2018/6/8 追加
 ;; https://github.com/dominikh/go-mode.el
 ;; ================================================
-(require 'go-mode)
+(use-package go-mode)
 
 ;; ================================================
 ;; erlang.el
 ;; 2018/10/20 追加
 ;; http://erlang.org/download/contrib/erlang.el
 ;; ================================================
-(require 'erlang-start)
+(use-package erlang)

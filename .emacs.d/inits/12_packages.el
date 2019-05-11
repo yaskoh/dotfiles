@@ -19,7 +19,7 @@
 ;; 2017/1/16 : yas-minor-modeのkeybindを変更、C-'に。
 ;; 2017/1/17 : yasnippetを0.11.0へupdate。bindも修正。
 ;; ================================================
-(require 'yasnippet)
+(use-package yasnippet)
 (yas-global-mode 1)
 
 
@@ -28,33 +28,7 @@
 ;; 2014/3/21
 ;; https://github.com/illusori/emacs-flymake
 ;; ================================================
-(require 'flymake)
-
-
-;; ================================================
-;; auto-complete
-;; 2014/3/23
-;; https://github.com/auto-complete/auto-complete/
-;; obsolete : 2017/2/27, company
-;; ================================================
-(require 'auto-complete-config)
-(ac-config-default)
-(auto-complete-mode 1)
-
-
-;; ================================================
-;; helm
-;; 2014/3/21
-;; https://github.com/emacs-helm/helm
-;; ================================================
-(require 'helm-config)
-(helm-mode 1)
-;; キーバインド
-(bind-key "C-h" 'delete-backward-char helm-map)
-(bind-key "C-t" 'forward-char helm-map)
-(bind-key "C-k" 'kill-line helm-map)
-; TABキーで補完(C-zと同様の動き)
-(bind-key "<tab>" 'helm-execute-persistent-action helm-read-file-map)
+(use-package flymake)
 
 
 ;; ================================================
@@ -64,7 +38,7 @@
 ;;
 ;; 2017/1/16 : emmet-expand-lineのキーを変更、C-,に。
 ;; ================================================
-(require 'emmet-mode)
+(use-package emmet-mode)
 (add-hook 'web-mode-hook 'emmet-mode)
 (add-hook 'css-mode-hook 'emmet-mode)
 (add-hook 'nxml-mode-hook 'emmet-mode)
@@ -91,7 +65,7 @@
 ;; flycheck
 ;; 2014/6/4
 ;; ================================================
-(require 'flycheck)
+(use-package flycheck)
 (add-hook 'after-init-hook #'global-flycheck-mode)
 
 ;; ================================================
@@ -105,7 +79,7 @@
 ;; wdired settings
 ;; 2016/04/18
 ;; ================================================
-(require 'wdired)
+(use-package wdired)
 (bind-key "f" 'wdired-change-to-wdired-mode dired-mode-map)
 
 ;; ================================================
@@ -113,7 +87,7 @@
 ;; 2016/04/19
 ;; https://github.com/fasheng/dired-toggle
 ;; ================================================
-(require 'dired-toggle)
+(use-package dired-toggle)
 (bind-key "q" 'delete-window dired-toggle-mode-map)
 
 ;; ================================================
@@ -121,5 +95,30 @@
 ;; 2016/11/14
 ;; https://github.com/emacsmirror/px
 ;; ================================================
-(require 'px)
+(use-package px)
 
+;; ================================================
+;; magit
+;; 2017/01/16
+;; https://github.com/magit/magit
+;; ================================================
+(use-package magit
+  :config
+  (when (or (eq system-type 'darwin)
+            (eq system-type 'gnu/linux))
+    (require 'magit))
+  (bind-key "C-x g" 'magit-status)
+  )
+;; ================================================
+;; openwith
+;; 2017/07/22
+;; 外部プログラムを使ってファイルを開く
+;; ================================================
+(use-package openwith)
+(openwith-mode t)
+
+;; ================================================
+;; redo+
+;; 2019/05/12
+;; ================================================
+(use-package redo+)
