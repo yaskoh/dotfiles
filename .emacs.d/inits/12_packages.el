@@ -122,3 +122,16 @@
 ;; 2019/05/12
 ;; ================================================
 (use-package redo+)
+
+;; ================================================
+;; dumb-jump
+;; 2019/05/12
+;; ================================================
+(use-package dumb-jump
+  :config
+  (setq dumb-jump-mode t)
+  (setq dumb-jump-selector 'ivy)
+  (setq dumb-jump-use-visible-window nil)
+  (define-key global-map [(super d)] 'dumb-jump-go)
+  (define-key global-map [(super shift d)] 'dumb-jump-back)
+  )
