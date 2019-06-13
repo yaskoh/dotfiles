@@ -22,6 +22,10 @@
 (use-package yasnippet)
 (yas-global-mode 1)
 
+(bind-keys :map yas-minor-mode-map
+           ("C-'" . yas-expand)
+           ("C-i" . indent-for-tab-command)
+           )
 
 ;; ================================================
 ;; emacs-flymake
