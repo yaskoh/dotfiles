@@ -10,6 +10,9 @@
 (bind-keys*
            ("C-o" . other-window)
            ("C-x o" . other-frame)
+           ("C-z" . undo)
+           ("C-M-z" . redo)
+           ("C-/" . transpose-chars)
            )
 
 (bind-keys :map global-map
@@ -26,9 +29,6 @@
            ("C-x -" . split-window-below)
            ("C-x |" . split-window-right)
            ("C-x C-f" . counsel-find-file)
-           ("C-z" . undo)
-           ("C-M-z" . redo)
-           ("C-/" . transpose-chars)
            ("M-t" . forward-word)
            ("M-r" . replace-string)
            ("M-x" . counsel-M-x)
