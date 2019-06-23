@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: f
+# name: function
 # key: f
 # --
 ${1:int} ${2:func} ($3) {

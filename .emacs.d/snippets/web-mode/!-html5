@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: !-html5
+# name: !DOCTYPE(html5)
 # key: !
 # --
 <!DOCTYPE html>
