@@ -45,6 +45,8 @@ alias gaa='gitall addlist'
 # path
 export PATH=${HOME}/bin:$PATH
 
+# tmux
+[[ -z "${TMUX}" && ! -z "PS1" ]] && tmux
 
 ## For each OS ##
 case `uname -s` in
@@ -52,7 +54,7 @@ case `uname -s` in
 # Mac
 Darwin*)
     # tmux
-    [[ -z "${TMUX}" && ! -z "PS1" ]] && tmux
+    # [[ -z "${TMUX}" && ! -z "PS1" ]] && tmux
     # alias
     alias ls='ls -FG'
     alias ll='ls -l'
@@ -75,9 +77,6 @@ Linux*)
     alias ll='ls -l'
     alias la='ls -a'
     alias l='ls -C'
-    # rbenv
-    export PATH="${HOME}/.rbenv/bin:${PATH}"
-    eval "$(rbenv init -)"
     # for Debian
     export PATH=${PATH}:/sbin
     ;;
@@ -85,7 +84,7 @@ Linux*)
 # Cygwin
 CYGWIN* | MSYS*)
     cd
-    [[ -z "${TMUX}" && ! -z "PS1" ]] && tmux
+    # [[ -z "${TMUX}" && ! -z "PS1" ]] && tmux
 
     # alias
     alias ls='ls -F --color=auto --show-control-chars'
@@ -94,10 +93,6 @@ CYGWIN* | MSYS*)
     alias l='ls -C'
     alias -g G='| grep'
     alias -g L='| less'
-
-    # rbenv
-    export PATH="/usr/local/bin:${HOME}/.rbenv/bin:${PATH}"
-    eval "$(rbenv init -)"
     ;;
 
 esac
