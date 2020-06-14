@@ -3,7 +3,7 @@
     "sync.quietSync": false,
     "sync.removeExtensions": true,
     "sync.syncExtensions": true,
-    "sync.autoDownload": true,
-    "sync.autoUpload": true,
+    "sync.autoDownload": false,
+    "sync.autoUpload": false,
     "sync.forceDownload": false
 }

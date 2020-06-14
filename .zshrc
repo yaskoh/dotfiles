@@ -60,8 +60,8 @@ Darwin*)
     alias l='ls -C'
     alias emacs='open -a /Applications/Emacs.app/Contents/MacOS/Emacs'
     # rbenv
-    export PATH=${HOME}/.rbenv/bin:${PATH}
-    eval "$(rbenv init -)"
+    # export PATH=${HOME}/.rbenv/bin:${PATH}
+    # eval "$(rbenv init -)"
     # MacPort
     export PATH="/opt/local/bin:/opt/local/sbin:${PATH}"
     ;;
