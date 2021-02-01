@@ -27,6 +27,11 @@ rem ********************
 mklink %HOME%\.vimrc %~dp0\.vimrc
 
 rem ********************
+rem Windows Terminal
+rem ********************
+mklink C:\Users\kyasutake\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json %~dp0\winterminal\settings.json
+
+rem ********************
 rem xyzzy
 rem ********************
 rem if exist winlink rmdir /s /q winlink
