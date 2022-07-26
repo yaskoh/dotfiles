@@ -8,6 +8,7 @@
 
 (use-package org)
 ;(require 'org-install)
+(bind-key "C-t" 'org-cycle org-mode-map)
 (bind-key "C-c l" 'org-store-link org-mode-map)
 (bind-key "C-c c" 'org-capture org-mode-map)
 (bind-key "C-c a" 'org-agenda org-mode-map)

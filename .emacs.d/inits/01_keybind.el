@@ -35,7 +35,6 @@
            ("M-z" . transpose-words)
            )
 
-
 ; help-modeにevilでmodeが移り変われれば良いのでは。
 ; evil周りの設定がまだよくわからない。
 ;(bind-keys* :map help-mode-map

@@ -20,11 +20,11 @@
 ;; 下記ディレクトリおよびサブディレクトリをサブディレクトリに追加
 (add-to-load-path "elisp")
 
-
 ;; ================================================
 ;; straight
 ;; 2019/05/08
 ;; https://github.com/raxod502/straight.el
+;; -> https://github.com/radian-software/straight.el
 ;; ================================================
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -48,7 +48,6 @@
 (straight-use-package 'use-package)
 ; オプションなしで、use-packageをstraight.elにフォールバック(":straigt t" が不要)
 (setq straight-use-package-by-default t)
-
 
 ;; ================================================
 ;; init-loader
